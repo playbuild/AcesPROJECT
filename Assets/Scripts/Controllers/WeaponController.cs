@@ -239,6 +239,7 @@ public class WeaponController : MonoBehaviour
         uiController.SetGunText(bulletCnt);
 
         SetArmament();
+        SetUIAndTarget();
     }
     void Update()
     {

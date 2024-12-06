@@ -42,6 +42,5 @@ public class CooldownImage : MonoBehaviour
     void Update()
     {
         fillImage.fillAmount = weaponSlot.GetCurrentCooldownPercent();
-        Debug.Log("debug" + weaponSlot.GetCurrentCooldownPercent());
     }
 }
