@@ -15,6 +15,8 @@ public class PlayerFighterController : MonoBehaviour
         }
     }
 
+
+    public float throttleAmount;
     public float rollAmount;
     public float pitchAmount;
     public float yawAmount;
@@ -35,6 +37,7 @@ public class PlayerFighterController : MonoBehaviour
     float brakeValue;
 
     float speedReciprocal; // maxSpeed의 역수
+    float throttle; //쓰로틀 값
 
     Vector2 rightStickValue;
     Vector3 rotateValue;
@@ -48,17 +51,24 @@ public class PlayerFighterController : MonoBehaviour
         rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
         //비행기 전진
         rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
+
+        throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
+
         //비행기 가속
-        float accelEase = (maxSpeed - speed) * speedReciprocal;
-        speed += accelerateValue * accelerateAmount * accelEase * Time.fixedDeltaTime;
-        //비행기 감속
-        float brakeEase = (speed - minSpeed) * speedReciprocal;
-        speed -= brakeValue * brakeAmount * brakeEase * Time.fixedDeltaTime;
-        //기본 속도로 복구
-        if (accelerateValue == 0 && brakeValue == 0)
+        if (throttle > 0)
         {
-            speed += (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.fixedDeltaTime;
+            float accelEase = (maxSpeed + (transform.position.y * 0.01f) - speed) * speedReciprocal;
+            speed += throttle * accelerateAmount * accelEase * Time.fixedDeltaTime;
         }
+        else if (throttle < 0)
+        {
+            //비행기 감속
+            float brakeEase = (speed - minSpeed) * speedReciprocal;
+            speed += throttle * brakeAmount * brakeEase * Time.fixedDeltaTime;
+        }
+        //기본 속도로 복구
+        float release = 1 - Mathf.Abs(throttle);
+        speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
 
         rb.velocity = transform.forward * speed;
     }
@@ -110,9 +120,15 @@ public class PlayerFighterController : MonoBehaviour
     {
         accelerateValue = context.ReadValue<float>();
     }
-    void Update()
+    void SetUI()
     {
         uiController.SetAltitude((int)(transform.position.y * 5));
         uiController.SetSpeed((int)(speed * 10));
+        uiController.SetThrottle(throttle);
+    }
+
+    void Update()
+    {
+        SetUI();
     }
 }

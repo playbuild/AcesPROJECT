@@ -48,16 +48,24 @@ public class UIController : MonoBehaviour
     [SerializeField]
     CooldownImage rightMslCooldownImage;
 
+    [Header("UV Status")]
+    public UVController speedUV;
+    public UVController altitudeUV;
+    public Image throttleGauge;
 
     public void SetSpeed(int speed)
     {
         string text = string.Format("<mspace=18>{0}</mspace>", speed);
         speedText.text = text;
+
+        speedUV.SetUV(speed);
     }
     public void SetAltitude(int altitude)
     {
         string text = string.Format("<mspace=18>{0}</mspace>", altitude);
         altitudeText.text = text;
+
+        altitudeUV.SetUV(altitude);
     }
     public void SetGunText(int bullets)
     {
@@ -83,7 +91,10 @@ public class UIController : MonoBehaviour
         leftMslCooldownImage.SetWeaponData(weaponSlots[0], missile.missileFrameSprite, missile.missileFillSprite);
         rightMslCooldownImage.SetWeaponData(weaponSlots[1], missile.missileFrameSprite, missile.missileFillSprite);
     }
-
+    public void SetThrottle(float throttle)
+    {
+        throttleGauge.fillAmount = (1 + throttle) * 0.5f;
+    }
     void Start()
     {
         
