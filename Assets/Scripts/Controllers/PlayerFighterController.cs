@@ -125,6 +125,7 @@ public class PlayerFighterController : MonoBehaviour
         uiController.SetAltitude((int)(transform.position.y * 5));
         uiController.SetSpeed((int)(speed * 10));
         uiController.SetThrottle(throttle);
+        uiController.SetHeading(transform.eulerAngles.y);
     }
 
     void Update()

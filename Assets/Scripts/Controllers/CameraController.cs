@@ -34,6 +34,8 @@ public class CameraController : MonoBehaviour
     public float pitchLerpAmount;
     public float pitchAmount;
 
+    UIController uiController;
+
     Camera currentCamera;
 
     int cameraViewIndex = 0;
@@ -64,11 +66,12 @@ public class CameraController : MonoBehaviour
             }
             cameras[i].enabled = (i == cameraViewIndex);
         }
+        uiController.SwitchUI((CameraIndex)cameraViewIndex);
     }
     void Start()
     {
+        uiController = GameManager.UIController;
         SetCamera();
-
         thirdPivotOriginPosition = thirdViewCameraPivot.localPosition;
     }
 
@@ -85,6 +88,7 @@ public class CameraController : MonoBehaviour
     {
         Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 180, 0);
         cameraPivot.localEulerAngles = rotateValue;
+        uiController.AdjustFirstViewUI(rotateValue);
     }
 
     void Rotate1stViewWithCockpitCamera()
@@ -94,6 +98,7 @@ public class CameraController : MonoBehaviour
             rotateValue.x *= 0.3f;
 
         cameraPivot.localEulerAngles = rotateValue;
+        uiController.AdjustFirstViewUI(rotateValue);
     }
 
     void Rotate3rdViewCamera()

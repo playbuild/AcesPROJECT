@@ -6,6 +6,14 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
+    [Header("1st-3rd View Control")]
+    public RectTransform commonCenterUI;
+    public RectTransform firstCenterViewTransform;
+    public RectTransform thirdCenterViewTransform;
+
+    public Canvas firstViewCanvas;
+    public Vector2 firstViewAdjustAngle;
+
     // Center
     [Header("Common Center UI")]
     [SerializeField]
@@ -52,6 +60,8 @@ public class UIController : MonoBehaviour
     public UVController speedUV;
     public UVController altitudeUV;
     public Image throttleGauge;
+    [SerializeField]
+    HeadingUIController headingUIController;
 
     public void SetSpeed(int speed)
     {
@@ -91,13 +101,37 @@ public class UIController : MonoBehaviour
         leftMslCooldownImage.SetWeaponData(weaponSlots[0], missile.missileFrameSprite, missile.missileFillSprite);
         rightMslCooldownImage.SetWeaponData(weaponSlots[1], missile.missileFrameSprite, missile.missileFillSprite);
     }
+    public void SwitchUI(CameraController.CameraIndex index)
+    {
+        bool isFirstView = (index == CameraController.CameraIndex.FirstView ||
+                            index == CameraController.CameraIndex.FirstViewWithCockpit);
+
+        firstCenterViewTransform.gameObject.SetActive(isFirstView);
+
+        RectTransform parentTransform = (isFirstView) ? firstCenterViewTransform : thirdCenterViewTransform;
+        commonCenterUI.SetParent(parentTransform);
+    }
     public void SetThrottle(float throttle)
     {
         throttleGauge.fillAmount = (1 + throttle) * 0.5f;
     }
+    public void SetHeading(float heading)
+    {
+        headingUIController.SetHeading(heading);
+    }
     void Start()
     {
-        
+        firstViewAdjustAngle = new Vector2(1 / firstViewAdjustAngle.x, 1 / firstViewAdjustAngle.y);
+    }
+    public void AdjustFirstViewUI(Vector3 cameraRotation)
+    {
+        if (cameraRotation.x > 180) cameraRotation.x -= 360;
+        if (cameraRotation.y > 180) cameraRotation.y -= 360;
+
+        Vector2 canvasResolution = new Vector2(firstViewCanvas.pixelRect.width,firstViewCanvas.pixelRect.height);
+        Vector2 convertedRotation = new Vector2(cameraRotation.y * firstViewAdjustAngle.x,cameraRotation.x * firstViewAdjustAngle.y);
+
+        firstCenterViewTransform.anchoredPosition = convertedRotation * canvasResolution;
     }
     void Update()
     {
