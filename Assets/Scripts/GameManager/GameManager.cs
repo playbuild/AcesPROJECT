@@ -22,15 +22,37 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     PlayerFighterController playerFighterController;
     [SerializeField]
+    PlayerAircraft playerAircraft;
+    [SerializeField]
     WeaponController weaponController;
+    [SerializeField]
+    CameraController cameraController;
+    [SerializeField]
+    TargetController targetController;
 
     public static PlayerFighterController PlayerFighterController
     {
         get { return Instance?.playerFighterController; }
     }
+    public static PlayerAircraft PlayerAircraft
+    {
+        get { return Instance?.playerAircraft; }
+    }
     public static WeaponController WeaponController
     {
         get { return Instance?.weaponController; }
+    }
+    public static CameraController CameraController
+    {
+        get { return Instance?.cameraController; }
+    }
+    public static UIController UIController
+    {
+        get { return Instance?.uiController; }
+    }
+    public static TargetController TargetController
+    {
+        get { return Instance?.targetController; }
     }
     public static GameManager Instance
     {
@@ -43,7 +65,11 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
-        void Awake()
+    public float GetDistanceFromPlayer(Transform otherTransform)
+    {
+        return Vector3.Distance(otherTransform.position, playerAircraft.transform.position);
+    }
+    void Awake()
     {
         if (instance == null)
             {
@@ -51,9 +77,5 @@ public class GameManager : MonoBehaviour
             }
         Time.timeScale = 1;
         AudioListener.pause = false;
-    }
-    public static UIController UIController
-    {
-        get { return Instance?.uiController; }
     }
 }

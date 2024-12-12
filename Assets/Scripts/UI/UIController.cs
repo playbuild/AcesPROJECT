@@ -133,6 +133,19 @@ public class UIController : MonoBehaviour
 
         firstCenterViewTransform.anchoredPosition = convertedRotation * canvasResolution;
     }
+    public void SetTargetText(ObjectInfo objectInfo)
+    {
+        if (objectInfo == null || objectInfo.ObjectName == "")
+        {
+            targetText.text = "";
+        }
+        else
+        {
+            string objectName = objectInfo.ObjectName + " " + objectInfo.ObjectNickname;
+            string text = string.Format("TARGET {0} +<mspace=18>{1}</mspace>", objectName, objectInfo.Score);
+            targetText.text = text;
+        }
+    }
     void Update()
     {
         

@@ -65,6 +65,7 @@ public class MinimapCamera : MonoBehaviour
     }
     public void ShowBorderIndicator(Vector3 position)
     {
+        Debug.Log("debug");
         float reciprocal;
         float rotation;
         Vector2 distance = new Vector3(transform.position.x - position.x, transform.position.z - position.z);

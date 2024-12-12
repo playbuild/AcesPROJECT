@@ -111,7 +111,11 @@ public class CameraController : MonoBehaviour
         thirdViewCameraPivot.localEulerAngles = rotateValue;
         thirdViewCameraPivot.localPosition = thirdPivotOriginPosition + adjustPosition;
     }
-
+    public Camera GetActiveCamera()
+    {
+        if (GameManager.PlayerAircraft == null) return null;
+        return currentCamera;
+    }
     void Update()
     {
         lookValue = Vector2.Lerp(lookValue, lookInputValue, lerpAmount * Time.deltaTime);
