@@ -11,11 +11,15 @@ public class TargetController : MonoBehaviour
     [SerializeField]
     TargetObject lockedTarget;
 
+    [SerializeField]
+    TargetArrow targetArrow;
+
     void Start()
     {
         if (lockedTarget != null)
         {
             GameManager.UIController.SetTargetText(lockedTarget.Info);
+            targetArrow.SetTarget(lockedTarget);    // Set Arrow UI
         }
     }
     public void CreateTargetUI(TargetObject targetObject)
@@ -39,6 +43,7 @@ public class TargetController : MonoBehaviour
 
     public void ChangeTarget(TargetObject lockedTarget)
     {
+        targetArrow.SetTarget(lockedTarget);
         GameManager.UIController.SetTargetText(lockedTarget.Info);
 
         TargetUI targetUI = FindTargetUI(lockedTarget);
@@ -48,6 +53,10 @@ public class TargetController : MonoBehaviour
             currentTargettedUI = targetUI;
             targetUI.SetTargetted(true);
         }
+    }
+    public void ShowTargetArrow(bool show)
+    {
+        targetArrow.SetArrowVisible(show);
     }
 
     public TargetUI FindTargetUI(TargetObject targetObject)

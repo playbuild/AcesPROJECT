@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41a72aeeb639144cafca8ce70a002c3, type: 3}
   m_Name: Pixy
   m_EditorClassIdentifier: 
-  objectName: 
-  objectNickname: 
-  score: 0
-  hp: 0
+  objectName: F-15C
+  objectNickname: PIXY
+  score: 5000
+  hp: 100
   mainTarget: 0

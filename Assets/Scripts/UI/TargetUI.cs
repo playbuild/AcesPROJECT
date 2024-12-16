@@ -51,6 +51,7 @@ public class TargetUI : MonoBehaviour
         }
     }
 
+    Vector2 screenSize;
     RectTransform canvasRect;
     Camera activeCamera;
 
@@ -118,7 +119,10 @@ public class TargetUI : MonoBehaviour
             Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(activeCamera, targetObject.transform.position);
             rectTransform.anchoredPosition = screenPoint - canvasRect.sizeDelta * 0.5f;
         }
-
+        bool isOutsideOfCamera = (screenPosition.z < 0 ||
+                    screenPosition.x < 0 || screenPosition.x > screenSize.x ||
+                    screenPosition.y < 0 || screenPosition.y > screenSize.y);
         uiObject.SetActive(distance < hideDistance);
+        GameManager.TargetController.ShowTargetArrow(isOutsideOfCamera && distance < hideDistance);
     }
 }

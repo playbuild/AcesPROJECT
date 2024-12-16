@@ -42,6 +42,14 @@ public class PlayerFighterController : MonoBehaviour
     Vector2 rightStickValue;
     Vector3 rotateValue;
     Rigidbody rb;
+
+    // public gets
+
+    public Vector3 RotateValue
+    {
+        get { return rotateValue; }
+    }
+
     void MoveAircraft()
     {
         //비행기 회전

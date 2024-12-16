@@ -35,6 +35,7 @@ public class CameraController : MonoBehaviour
     public float pitchAmount;
 
     UIController uiController;
+    public Transform targetArrowTransform;
 
     Camera currentCamera;
 
@@ -66,6 +67,7 @@ public class CameraController : MonoBehaviour
             }
             cameras[i].enabled = (i == cameraViewIndex);
         }
+        targetArrowTransform.SetParent(currentCamera.transform, false);
         uiController.SwitchUI((CameraIndex)cameraViewIndex);
     }
     void Start()
