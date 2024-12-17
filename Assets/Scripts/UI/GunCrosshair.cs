@@ -29,7 +29,6 @@ public class GunCrosshair : Crosshair
     protected override void Update()
     {
         float distance = Vector3.Distance(GameManager.PlayerFighterController.transform.position, target.position);
-        Debug.Log("debugging" + target.position);
         Vector2 aircraftRotation = GameManager.PlayerFighterController.RotateValue;
         Vector3 convertedPosition = new Vector3(-aircraftRotation.y * offset.x, aircraftRotation.x * offset.y, zDistance * distance * reciprocal);
         transform.localPosition = Vector3.Lerp(transform.localPosition, convertedPosition, lerpAmount);

@@ -63,6 +63,17 @@ public class UIController : MonoBehaviour
     [SerializeField]
     HeadingUIController headingUIController;
 
+    [Header("Materials")]
+    [SerializeField]
+    Material spriteMaterial;
+    [SerializeField]
+    Material fontMaterial;
+
+    [SerializeField]
+    Color normalColor;
+    [SerializeField]
+    Color warningColor;
+
     public void SetSpeed(int speed)
     {
         string text = string.Format("<mspace=18>{0}</mspace>", speed);
@@ -119,9 +130,18 @@ public class UIController : MonoBehaviour
     {
         headingUIController.SetHeading(heading);
     }
+    public void SetWarningUIColor(bool isWarning)
+    {
+        Color color = (isWarning == true) ? warningColor : normalColor;
+        spriteMaterial.color = color;
+        fontMaterial.SetColor("_FaceColor", color);
+    }
+
     void Start()
     {
         firstViewAdjustAngle = new Vector2(1 / firstViewAdjustAngle.x, 1 / firstViewAdjustAngle.y);
+
+        //SetWarningUIColor(true); // TEST
     }
     public void AdjustFirstViewUI(Vector3 cameraRotation)
     {
