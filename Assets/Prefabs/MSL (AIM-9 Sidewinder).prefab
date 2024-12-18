@@ -276,6 +276,8 @@ MonoBehaviour:
   maxSpeed: 305
   accelAmount: 25
   lifetime: 7
+  targetSearchSpeed: 40
+  lockDistance: 1500
   missileName: SideWinder
   boresightAngle: 90
   explosionPrefab: {fileID: 198917022394846920, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}

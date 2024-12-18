@@ -7,13 +7,18 @@ public class TargetController : MonoBehaviour
     public GameObject targetUIObject;
     List<TargetUI> targetUIs;
     TargetUI currentTargettedUI;
-
-    [SerializeField]
     TargetObject lockedTarget;
 
     [SerializeField]
     TargetArrow targetArrow;
 
+    [SerializeField]
+    TargetLock targetLock;
+
+    public bool IsLocked
+    {
+        get { return targetLock.IsLocked; }
+    }
     void Start()
     {
         if (lockedTarget != null)
@@ -27,6 +32,7 @@ public class TargetController : MonoBehaviour
         GameObject obj = Instantiate(targetUIObject);
         TargetUI targetUI = obj.GetComponent<TargetUI>();
         targetUI.Target = targetObject;
+        targetUIs.Add(targetUI);
 
         obj.transform.SetParent(transform, false);
     }
@@ -69,5 +75,9 @@ public class TargetController : MonoBehaviour
             }
         }
         return null;
+    }
+    public void SetTargetUILock(bool isLocked)
+    {
+        currentTargettedUI?.SetLock(isLocked);
     }
 }

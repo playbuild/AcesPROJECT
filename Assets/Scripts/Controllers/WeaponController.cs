@@ -123,7 +123,8 @@ public class WeaponController : MonoBehaviour
         missile.SetActive(true);
 
         Missile missileScript = missile.GetComponent<Missile>();
-        missileScript.Launch(target, fighterController.Speed + 15, gameObject.layer);
+        Transform targetTrasnform = (target != null && GameManager.TargetController.IsLocked == true) ? target.transform : null;
+        missileScript.Launch(targetTrasnform, fighterController.Speed + 15, gameObject.layer);
 
         missileCnt--;
 

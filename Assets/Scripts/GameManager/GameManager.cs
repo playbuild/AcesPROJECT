@@ -30,6 +30,22 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TargetController targetController;
 
+
+    [SerializeField]
+    Color normalColor;
+    [SerializeField]
+    Color warningColor;
+
+    public static Color NormalColor
+    {
+        get { return Instance.normalColor; }
+    }
+
+    public static Color WarningColor
+    {
+        get { return Instance.warningColor; }
+    }
+
     public static PlayerFighterController PlayerFighterController
     {
         get { return Instance?.playerFighterController; }
@@ -68,6 +84,12 @@ public class GameManager : MonoBehaviour
     public float GetDistanceFromPlayer(Transform otherTransform)
     {
         return Vector3.Distance(otherTransform.position, playerAircraft.transform.position);
+    }
+    public static float GetAngleBetweenTransform(Transform otherTransform)
+    {
+        Vector3 direction = PlayerAircraft.transform.forward;
+        Vector3 diff = otherTransform.position - PlayerAircraft.transform.position;
+        return Vector3.Angle(diff, direction);
     }
     void Awake()
     {

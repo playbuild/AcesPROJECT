@@ -222,6 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetObject: {fileID: 0}
+  frameImage: {fileID: 8387989423835569048}
   distanceText: {fileID: 8387989424064108275}
   nameText: {fileID: 8387989425846633183}
   nicknameText: {fileID: 8387989424329936365}
@@ -229,6 +230,7 @@ MonoBehaviour:
   isMainTarget: 1
   hideDistance: 3000
   uiObject: {fileID: 7852178435658271255}
+  blinkRepeatTime: 0.25
 --- !u!1 &7852178435658271255
 GameObject:
   m_ObjectHideFlags: 0

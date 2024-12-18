@@ -8,15 +8,20 @@ public class Missile : MonoBehaviour
     Rigidbody rb;
 
     Transform target;
-    public float turningForce;
-
-    public float maxSpeed;
-    public float accelAmount;
-    public float lifetime;
     float speed;
     public string missileName;
 
+
+    public bool isSpecialWeapon;
+    public float maxSpeed;
+    public float accelAmount;
+    public float turningForce;
+
+    public float targetSearchSpeed;
+    public float lockDistance;
+
     public float boresightAngle;
+    public float lifetime;
 
     public ParticleSystem explosionPrefab;
 
