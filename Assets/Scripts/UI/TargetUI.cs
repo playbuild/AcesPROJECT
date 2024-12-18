@@ -59,6 +59,10 @@ public class TargetUI : MonoBehaviour
             targetText.gameObject.SetActive(objectInfo.MainTarget);
         }
     }
+    public GameObject UIObject
+    {
+        get { return uiObject; }
+    }
 
     Vector2 screenSize;
     RectTransform canvasRect;
@@ -106,11 +110,6 @@ public class TargetUI : MonoBehaviour
             blinkUIObject.SetActive(true);
         }
     }
-
-    void Blink()
-    {
-        blinkUIObject.SetActive(!blinkUIObject.activeInHierarchy);
-    }
     public void SetLock(bool isLocked)
     {
         if (isLocked == true)
@@ -124,7 +123,10 @@ public class TargetUI : MonoBehaviour
             frameImage.color = GameManager.NormalColor;
         }
     }
-
+    void Blink()
+    {
+        blinkUIObject.SetActive(!blinkUIObject.activeInHierarchy);
+    }
 
     void Start()
     {

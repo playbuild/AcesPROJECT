@@ -12,6 +12,8 @@ public class WeaponController : MonoBehaviour
     bool useSpecialWeapon;
     bool isGunFiring;
 
+    TargetObject target;
+
     PlayerFighterController fighterController;
     UIController uiController;
 
@@ -32,12 +34,12 @@ public class WeaponController : MonoBehaviour
 
     ObjectPools bulletPool;
 
+    bool isFocusingTarget;
+
     public int bulletCnt;
     public Transform gunTransform;
     public float gunRPM;
     float fireInterval;
-
-    public Transform target;
 
     [Header("Missile")]
     [SerializeField]
@@ -172,6 +174,81 @@ public class WeaponController : MonoBehaviour
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.Fire(fighterController.Speed, gameObject.layer);
         bulletCnt--;
+    }
+    public void ChangeTarget(InputAction.CallbackContext context)
+    {
+        if (context.action.phase == InputActionPhase.Started)
+        {
+            isFocusingTarget = false;
+        }
+
+        // Hold Interaction Performed (0.3s)
+        else if (context.action.phase == InputActionPhase.Performed)
+        {
+            if (target == null) return;
+
+            GameManager.CameraController.LockOnTarget(target.transform);
+            isFocusingTarget = true;
+        }
+
+        else if (context.action.phase == InputActionPhase.Canceled)
+        {
+            // Hold
+            if (isFocusingTarget == true)
+            {
+                GameManager.CameraController.LockOnTarget(null);
+            }
+            // Press
+            else
+            {
+                TargetObject newTarget = GetNextTarget();
+                if (newTarget == null || (newTarget != null && newTarget == target)) return;
+
+                target = GetNextTarget();
+                target.isNextTarget = false;
+                GameManager.TargetController.ChangeTarget(target);
+            }
+        }
+    }
+    TargetObject GetNextTarget()
+    {
+        List<TargetObject> targets = GameManager.Instance.GetTargetsWithinDistance(3000);
+        TargetObject selectedTarget = null;
+
+        if (targets.Count == 0) return null;
+
+        else if (targets.Count == 1) selectedTarget = targets[0];
+
+        else
+        {
+            if (target == null) return targets[0];   // not selected
+
+            for (int i = 0; i < targets.Count; i++)
+            {
+                if (targets[i] == target)
+                {
+                    if (i == targets.Count - 1)  // last index
+                    {
+                        targets[1].isNextTarget = true;
+                        targets[0].isNextTarget = false;
+                        selectedTarget = targets[0];
+                    }
+                    else
+                    {
+                        if (i + 1 == targets.Count - 1)  // i + 1 == last index
+                        {
+                            targets[0].isNextTarget = true;
+                        }
+                        else    // something that is not last and before last index
+                        {
+                            targets[i + 2].isNextTarget = true;
+                        }
+                        selectedTarget = targets[i + 1];
+                    }
+                }
+            }
+        }
+        return selectedTarget;
     }
 
     public void SwitchWeapon(InputAction.CallbackContext context)

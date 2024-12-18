@@ -34,6 +34,8 @@ public class CameraController : MonoBehaviour
     public float pitchLerpAmount;
     public float pitchAmount;
 
+    Transform lockOnTargetTransform;
+
     UIController uiController;
     public Transform targetArrowTransform;
 
@@ -117,6 +119,10 @@ public class CameraController : MonoBehaviour
     {
         if (GameManager.PlayerAircraft == null) return null;
         return currentCamera;
+    }
+    public void LockOnTarget(Transform targetTransform)
+    {
+        lockOnTargetTransform = targetTransform;
     }
     void Update()
     {

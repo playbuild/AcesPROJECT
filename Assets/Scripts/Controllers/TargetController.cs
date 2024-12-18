@@ -5,7 +5,7 @@ using UnityEngine;
 public class TargetController : MonoBehaviour
 {
     public GameObject targetUIObject;
-    List<TargetUI> targetUIs;
+    List<TargetUI> targetUIs = new List<TargetUI>();
     TargetUI currentTargettedUI;
     TargetObject lockedTarget;
 
@@ -19,19 +19,15 @@ public class TargetController : MonoBehaviour
     {
         get { return targetLock.IsLocked; }
     }
-    void Start()
-    {
-        if (lockedTarget != null)
-        {
-            GameManager.UIController.SetTargetText(lockedTarget.Info);
-            targetArrow.SetTarget(lockedTarget);    // Set Arrow UI
-        }
-    }
+
     public void CreateTargetUI(TargetObject targetObject)
     {
+        if (targetObject.TargetUI != null) return;
+
         GameObject obj = Instantiate(targetUIObject);
         TargetUI targetUI = obj.GetComponent<TargetUI>();
         targetUI.Target = targetObject;
+        targetObject.TargetUI = targetUI;
         targetUIs.Add(targetUI);
 
         obj.transform.SetParent(transform, false);
@@ -39,33 +35,59 @@ public class TargetController : MonoBehaviour
 
     public void RemoveTargetUI(TargetObject targetObject)
     {
-        TargetUI targetUI = FindTargetUI(targetObject);
-        if (targetUI.Target != null)
+        TargetUI foundUI = null;
+        foreach (TargetUI targetUI in targetUIs)
         {
-            targetUIs.Remove(targetUI);
-            Destroy(targetUI.gameObject);
+            if (targetUI.Target == targetObject)
+            {
+                foundUI = targetUI;
+                break;
+            }
+        }
+
+        if (foundUI != null)
+        {
+            targetUIs.Remove(foundUI);
+            Destroy(foundUI.gameObject);
         }
     }
 
-    public void ChangeTarget(TargetObject lockedTarget)
+    public void ChangeTarget(TargetObject newTarget)
     {
+        // No target
+        if (newTarget == null)
+        {
+            targetArrow.SetTarget(null);
+            GameManager.UIController.SetTargetText(null);
+            targetLock.SetTarget(null);
+            return;
+        }
+
+        lockedTarget = newTarget;
         targetArrow.SetTarget(lockedTarget);
         GameManager.UIController.SetTargetText(lockedTarget.Info);
 
-        TargetUI targetUI = FindTargetUI(lockedTarget);
-        if (targetUI.Target != null)
+        TargetUI targetUI = FindTargetUI();
+        targetLock.SetTarget(lockedTarget.transform);
+
+
+        if (targetUI != null && targetUI.Target != null)
         {
-            currentTargettedUI.SetTargetted(false);
+            if (currentTargettedUI != null)
+            {
+                currentTargettedUI.SetTargetted(false); // Disable Prev Target
+            }
             currentTargettedUI = targetUI;
-            targetUI.SetTargetted(true);
+            currentTargettedUI.SetTargetted(true);    // Enable Current Target
         }
     }
+
     public void ShowTargetArrow(bool show)
     {
         targetArrow.SetArrowVisible(show);
     }
 
-    public TargetUI FindTargetUI(TargetObject targetObject)
+    public TargetUI FindTargetUI()
     {
         foreach (TargetUI targetUI in targetUIs)
         {
@@ -74,10 +96,22 @@ public class TargetController : MonoBehaviour
                 return targetUI;
             }
         }
+
         return null;
     }
     public void SetTargetUILock(bool isLocked)
     {
-        currentTargettedUI?.SetLock(isLocked);
+        if (currentTargettedUI)
+        {
+            currentTargettedUI.SetLock(isLocked);
+        }
+    }
+    void Start()
+    {
+        if (lockedTarget != null)
+        {
+            GameManager.UIController.SetTargetText(lockedTarget.Info);
+            targetArrow.SetTarget(lockedTarget);    // Set Arrow UI
+        }
     }
 }

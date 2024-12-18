@@ -103,6 +103,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Change Target",
+                    "type": "Button",
+                    "id": "92e8dde6-34e3-4e9b-9942-588aa1fb0c70",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -312,6 +321,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ChangeMinimapView",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3eb49b61-4c28-422c-8365-e04fe47b89a2",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Target",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -67,6 +67,7 @@ public class TargetLock : FollowTransformUI
         // No target
         if (targetTransform == null)
         {
+            Debug.Log(targetTransform);
             ResetLock();
             return;
         }

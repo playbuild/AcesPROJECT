@@ -16,4 +16,4 @@ MonoBehaviour:
   objectNickname: PIXY
   score: 5000
   hp: 100
-  mainTarget: 0
+  mainTarget: 1

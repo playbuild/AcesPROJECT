@@ -7,6 +7,16 @@ public class TargetObject : MonoBehaviour
     [SerializeField]
     ObjectInfo objectInfo;
 
+    public bool isNextTarget;
+
+    protected TargetUI targetUI;
+
+    public TargetUI TargetUI
+    {
+        get { return targetUI; }
+        set { targetUI = value; }
+    }
+
     public ObjectInfo Info
     {
         get

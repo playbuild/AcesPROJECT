@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TargetController targetController;
 
+    List<TargetObject> objects = new List<TargetObject>();
 
     [SerializeField]
     Color normalColor;
@@ -91,6 +92,45 @@ public class GameManager : MonoBehaviour
         Vector3 diff = otherTransform.position - PlayerAircraft.transform.position;
         return Vector3.Angle(diff, direction);
     }
+    public List<TargetObject> GetTargetsWithinDistance(float distance, float searchAngle = 0, bool getNearestTarget = false)
+    {
+        List<TargetObject> objectsWithinDistance = new List<TargetObject>();
+        TargetObject nearestTarget = null;
+        float minDistance = distance;
+
+        foreach (TargetObject targetObject in objects)
+        {
+            // Search within searchAngle
+            if (searchAngle != 0)
+            {
+                if (GetAngleBetweenTransform(targetObject.transform) > searchAngle) continue;
+            }
+
+            float targetDistance = Vector3.Distance(targetObject.transform.position, playerAircraft.transform.position);
+
+            if (targetDistance < distance)
+            {
+                if (getNearestTarget == true && targetDistance < minDistance)
+                {
+                    nearestTarget = targetObject;
+                    minDistance = targetDistance;
+                }
+                objectsWithinDistance.Add(targetObject);
+            }
+            else
+            {
+                targetObject.isNextTarget = false;
+            }
+        }
+
+        if (getNearestTarget == true)
+        {
+            objectsWithinDistance.Clear();
+            objectsWithinDistance.Add(nearestTarget);
+        }
+        return objectsWithinDistance;
+    }
+
     void Awake()
     {
         if (instance == null)
