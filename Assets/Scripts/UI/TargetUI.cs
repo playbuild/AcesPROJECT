@@ -32,6 +32,7 @@ public class TargetUI : MonoBehaviour
 
     [SerializeField]
     GameObject uiObject;
+    [SerializeField]
     GameObject blinkUIObject;
 
     [SerializeField]

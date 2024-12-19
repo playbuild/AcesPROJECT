@@ -82,6 +82,15 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
+    public void AddEnemy(TargetObject targetObject)
+    {
+        objects.Add(targetObject);
+    }
+
+    public void RemoveEnemy(TargetObject targetObject)
+    {
+        objects.Remove(targetObject);
+    }
     public float GetDistanceFromPlayer(Transform otherTransform)
     {
         return Vector3.Distance(otherTransform.position, playerAircraft.transform.position);

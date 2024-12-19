@@ -90,29 +90,68 @@ public class CameraController : MonoBehaviour
     //카메라 모드에 따른 시점 변경 조절
     void Rotate1stViewCamera()
     {
-        Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 180, 0);
-        cameraPivot.localEulerAngles = rotateValue;
-        uiController.AdjustFirstViewUI(rotateValue);
+        Quaternion rotateQuaternion;
+
+        if (lockOnTargetTransform != null)
+        {
+            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+        }
+        else
+        {
+            Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 180, 0);
+            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+        }
+
+        cameraPivot.localRotation = rotateQuaternion;
+        uiController.AdjustFirstViewUI(rotateQuaternion.eulerAngles);
     }
 
     void Rotate1stViewWithCockpitCamera()
     {
-        Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 135, 0);
-        if (rotateValue.x > 0)
-            rotateValue.x *= 0.3f;
+        Quaternion rotateQuaternion;
 
-        cameraPivot.localEulerAngles = rotateValue;
-        uiController.AdjustFirstViewUI(rotateValue);
+        if (lockOnTargetTransform != null)
+        {
+            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+
+            // + Adjust/Clamp value
+            Vector3 rotateValue = rotateQuaternion.eulerAngles;
+            if (rotateValue.x > 180) rotateValue.x -= 360;
+            if (rotateValue.y > 180) rotateValue.y -= 360;
+            rotateValue.x = Mathf.Clamp(rotateValue.x, -90, 27);
+            rotateValue.y = Mathf.Clamp(rotateValue.y, -135, 135);
+
+            rotateQuaternion = Quaternion.Euler(rotateValue);
+        }
+        else
+        {
+            Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 135, 0);
+            if (rotateValue.x > 0) rotateValue.x *= 0.3f;
+            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+        }
+
+        cameraPivot.localRotation = rotateQuaternion;
+        uiController.AdjustFirstViewUI(rotateQuaternion.eulerAngles);
     }
 
     void Rotate3rdViewCamera()
     {
         Transform cameraTransform = currentCamera.transform;
+        Quaternion rotateQuaternion;
 
-        Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 180, rollValue * rollAmount);
-        Vector3 adjustPosition = new Vector3(0, pitchValue * pitchAmount - Mathf.Abs(lookValue.y), -zoomValue * zoomAmount);
+        if (lockOnTargetTransform != null)
+        {
+            rotateQuaternion = Quaternion.Lerp(thirdViewCameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+            thirdViewCameraPivot.localRotation = rotateQuaternion;
+        }
+        else
+        {
+            Vector3 rotateValue = new Vector3(lookInputValue.y * -90, lookInputValue.x * 180, rollValue * rollAmount);
+            rotateQuaternion = Quaternion.Lerp(thirdViewCameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+        }
+        thirdViewCameraPivot.localRotation = rotateQuaternion;
 
-        thirdViewCameraPivot.localEulerAngles = rotateValue;
+        Vector3 adjustPosition = new Vector3(0, pitchValue * pitchAmount - Mathf.Abs(lookValue.y) * 1.5f, -zoomValue * zoomAmount);
         thirdViewCameraPivot.localPosition = thirdPivotOriginPosition + adjustPosition;
     }
     public Camera GetActiveCamera()
@@ -123,6 +162,13 @@ public class CameraController : MonoBehaviour
     public void LockOnTarget(Transform targetTransform)
     {
         lockOnTargetTransform = targetTransform;
+    }
+    public Quaternion CalculateLockOnRotation()
+    {
+        Vector3 targetLocalPosition = transform.InverseTransformPoint(lockOnTargetTransform.position);
+        Vector3 rotateVector = Quaternion.LookRotation(targetLocalPosition, transform.up).eulerAngles;
+        rotateVector.z = 0; // z value must be 0
+        return Quaternion.Euler(rotateVector); // Recalculate
     }
     void Update()
     {

@@ -272,14 +272,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4789caa11f4117a4e869b7c9088ffb25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turningForce: 1
+  missileName: SideWinder
+  isSpecialWeapon: 0
   maxSpeed: 305
   accelAmount: 25
-  lifetime: 7
-  targetSearchSpeed: 40
+  turningForce: 1
+  targetSearchSpeed: 60
   lockDistance: 1500
-  missileName: SideWinder
   boresightAngle: 90
+  lifetime: 7
   explosionPrefab: {fileID: 198917022394846920, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
   cooldown: 4
   payload: 120

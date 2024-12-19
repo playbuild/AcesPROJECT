@@ -190,7 +190,7 @@ public class WeaponController : MonoBehaviour
             GameManager.CameraController.LockOnTarget(target.transform);
             isFocusingTarget = true;
         }
-
+        
         else if (context.action.phase == InputActionPhase.Canceled)
         {
             // Hold
@@ -268,6 +268,7 @@ public class WeaponController : MonoBehaviour
         uiController.SetGunText(bulletCnt);
         uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
         uiController.SwitchWeapon(weaponSlots, useSpecialWeapon, switchedMissile);
+        GameManager.TargetController.SwitchWeapon(switchedMissile);
     }
 
 

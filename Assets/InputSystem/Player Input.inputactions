@@ -15,15 +15,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Yaw",
-                    "type": "Value",
-                    "id": "22a920ac-512b-4832-90ef-cb53c7c6dfc4",
-                    "expectedControlType": "Analog",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Pitch",
                     "type": "Value",
                     "id": "aeeff14b-0856-4c22-8d25-81f5e1f04d79",
@@ -112,6 +103,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Yaw Q",
+                    "type": "Value",
+                    "id": "fb342608-dc60-42d6-b93c-634b90ab0254",
+                    "expectedControlType": "Analog",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Yaw E",
+                    "type": "Value",
+                    "id": "45c1e538-782a-4f77-9912-e35dca8e6c24",
+                    "expectedControlType": "Analog",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -145,39 +154,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Roll",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "1D Axis",
-                    "id": "56217af8-1db7-44d6-93ff-f6775f427dcd",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Yaw",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "e42362f1-8a47-4f95-bba8-48ac223b559a",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Yaw",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "a34bfc97-ede3-45c3-bab6-aa514f70b960",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Yaw",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -332,6 +308,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Change Target",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "139e21a1-b629-4f42-9d49-df4b27bdb624",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Yaw Q",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ff5aaf01-29d8-43c0-bb10-24c62ccc8791",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Yaw E",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

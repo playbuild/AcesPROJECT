@@ -15,6 +15,7 @@ public class TargetLock : FollowTransformUI
     RectTransform crosshair;
 
     // From Missile Data
+    bool isSpecialWeapon;
     float targetSearchSpeed;
     float boresightAngle;
     float lockDistance;
@@ -51,6 +52,8 @@ public class TargetLock : FollowTransformUI
     public void SwitchWeapon(Missile missile)
     {
         // Change missile's angle and search speed
+        isSpecialWeapon = missile.isSpecialWeapon;
+
         boresightAngle = missile.boresightAngle;
         targetSearchSpeed = missile.targetSearchSpeed;
         lockDistance = missile.lockDistance;
@@ -67,16 +70,16 @@ public class TargetLock : FollowTransformUI
         // No target
         if (targetTransform == null)
         {
-            Debug.Log(targetTransform);
             ResetLock();
             return;
         }
 
-        float distance = Vector3.Distance(targetTransform.position, GameManager.PlayerAircraft.transform.position);
+        float distance = Vector3.Distance(targetTransform.position, GameManager.PlayerFighterController.transform.position);
 
         // Exceed lockable distance
         if (distance > lockDistance)
         {
+            Debug.Log(distance + "," + lockDistance);
             ResetLock();
             return;
         }

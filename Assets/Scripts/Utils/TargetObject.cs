@@ -28,6 +28,7 @@ public class TargetObject : MonoBehaviour
     {
         if (gameObject.layer != LayerMask.NameToLayer("Player"))
         {
+            GameManager.Instance?.AddEnemy(this);
             GameManager.TargetController.CreateTargetUI(this);
         }
     }

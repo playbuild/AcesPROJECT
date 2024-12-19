@@ -12720,6 +12720,7 @@ MonoBehaviour:
   rollAmount: 50
   pitchAmount: 50
   yawAmount: 50
+  rotateLerpAmount: 8
   accelerateAmount: 20
   brakeAmount: 20
   lerpAmount: 180
@@ -12768,22 +12769,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 875434ac-827e-460b-ae99-8bae972b1726
     m_ActionName: FighterAction/Roll[/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1080295483}
-        m_TargetAssemblyTypeName: PlayerFighterController, Assembly-CSharp
-        m_MethodName: Yaw
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 22a920ac-512b-4832-90ef-cb53c7c6dfc4
-    m_ActionName: FighterAction/Yaw[/Keyboard/q,/Keyboard/e]
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1080295483}
@@ -12928,6 +12913,54 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 4ae4863c-1ae7-41e6-a424-be00ef6bc4be
     m_ActionName: FighterAction/ChangeMinimapView[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 919132147665213435}
+        m_TargetAssemblyTypeName: WeaponController, Assembly-CSharp
+        m_MethodName: ChangeTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 92e8dde6-34e3-4e9b-9942-588aa1fb0c70
+    m_ActionName: FighterAction/Change Target[/Keyboard/backquote]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1080295483}
+        m_TargetAssemblyTypeName: PlayerFighterController, Assembly-CSharp
+        m_MethodName: YawQ
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: fb342608-dc60-42d6-b93c-634b90ab0254
+    m_ActionName: FighterAction/Yaw Q[/Keyboard/q]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1080295483}
+        m_TargetAssemblyTypeName: PlayerFighterController, Assembly-CSharp
+        m_MethodName: YawE
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 45c1e538-782a-4f77-9912-e35dca8e6c24
+    m_ActionName: FighterAction/Yaw E[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: KeyBoard And Mouse
   m_DefaultActionMap: FighterAction
@@ -27629,6 +27662,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectInfo: {fileID: 11400000, guid: 801b123a26c39dd44865caba2cbf2e62, type: 2}
+  isNextTarget: 1
 --- !u!1 &2114682006
 GameObject:
   m_ObjectHideFlags: 0
@@ -28493,7 +28527,6 @@ MonoBehaviour:
   bulletCnt: 6000
   gunTransform: {fileID: 1187975721}
   gunRPM: 1200
-  target: {fileID: 2108598951}
   missile: {fileID: 2797035360069065348, guid: ac340c911b1a1c8439acd116fe36d84b, type: 3}
   specialWeapon: {fileID: 8671801656823410973, guid: bde73a6bb4ae07249b5a2a75aecc96ed, type: 3}
 --- !u!136 &919132147665213436

@@ -20,6 +20,7 @@ public class PlayerFighterController : MonoBehaviour
     public float rollAmount;
     public float pitchAmount;
     public float yawAmount;
+    public float rotateLerpAmount;
     public float accelerateAmount; // 가속 
     public float brakeAmount;
 
@@ -32,7 +33,8 @@ public class PlayerFighterController : MonoBehaviour
 
     float rollValue;
     float pitchValue;
-    float yawValue;
+    float yawQValue;
+    float yawEValue;
     float accelerateValue; // 컨트롤러로 얻어오는 값
     float brakeValue;
 
@@ -48,37 +50,6 @@ public class PlayerFighterController : MonoBehaviour
     public Vector3 RotateValue
     {
         get { return rotateValue; }
-    }
-
-    void MoveAircraft()
-    {
-        //비행기 회전
-        Vector3 lerpVector = new Vector3(pitchValue * pitchAmount, yawValue * yawAmount, -rollValue * rollAmount);
-        rotateValue = Vector3.Lerp(rotateValue, lerpVector, lerpAmount * Time.fixedDeltaTime);
-
-        rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
-        //비행기 전진
-        rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
-
-        throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
-
-        //비행기 가속
-        if (throttle > 0)
-        {
-            float accelEase = (maxSpeed + (transform.position.y * 0.01f) - speed) * speedReciprocal;
-            speed += throttle * accelerateAmount * accelEase * Time.fixedDeltaTime;
-        }
-        else if (throttle < 0)
-        {
-            //비행기 감속
-            float brakeEase = (speed - minSpeed) * speedReciprocal;
-            speed += throttle * brakeAmount * brakeEase * Time.fixedDeltaTime;
-        }
-        //기본 속도로 복구
-        float release = 1 - Mathf.Abs(throttle);
-        speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
-
-        rb.velocity = transform.forward * speed;
     }
 
     void Start()
@@ -120,9 +91,14 @@ public class PlayerFighterController : MonoBehaviour
         pitchValue = context.ReadValue<float>();
     }
 
-    public void Yaw(InputAction.CallbackContext context)
+    public void YawQ(InputAction.CallbackContext context)
     {
-        yawValue = context.ReadValue<float>();
+        yawQValue = context.ReadValue<float>();
+    }
+
+    public void YawE(InputAction.CallbackContext context)
+    {
+        yawEValue = context.ReadValue<float>();
     }
     public void Accelerate(InputAction.CallbackContext context)
     {
@@ -135,6 +111,64 @@ public class PlayerFighterController : MonoBehaviour
         uiController.SetThrottle(throttle);
         uiController.SetHeading(transform.eulerAngles.y);
     }
+    void Autopilot(out Vector3 rotateVector)
+    {
+        rotateVector = -transform.rotation.eulerAngles;
+        if (rotateVector.x < -180) rotateVector.x += 360;
+        if (rotateVector.z < -180) rotateVector.z += 360;
+
+        rotateVector.x = Mathf.Clamp(rotateVector.x * 2, -pitchAmount, pitchAmount);
+        rotateVector.z = Mathf.Clamp(rotateVector.z * 2, -rollAmount, rollAmount);
+        rotateVector.y = 0;
+    }
+
+    void MoveAircraft()
+    {
+        float accel = accelerateValue;
+        float brake = brakeValue;
+        float highGPitchFactor = 1;
+
+        // === Rotation ===
+        Vector3 rotateVector;
+
+        // 오토파일럿 (Press Q + E)
+        if (yawQValue == 1 && yawEValue == 1)
+        {
+            Autopilot(out rotateVector);
+        }
+        // 비행기 회전
+        else
+        {
+            rotateVector = new Vector3(pitchValue * pitchAmount * highGPitchFactor, (yawEValue - yawQValue) * yawAmount, -rollValue * rollAmount);
+        }
+        rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.deltaTime);
+        transform.Rotate(rotateValue * Time.deltaTime);
+
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
+        //비행기 전진
+        rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
+
+        throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
+
+        //비행기 가속
+        if (throttle > 0)
+        {
+            float accelEase = (maxSpeed + (transform.position.y * 0.01f) - speed) * speedReciprocal;
+            speed += throttle * accelerateAmount * accelEase * Time.fixedDeltaTime;
+        }
+        else if (throttle < 0)
+        {
+            //비행기 감속
+            float brakeEase = (speed - minSpeed) * speedReciprocal;
+            speed += throttle * brakeAmount * brakeEase * Time.fixedDeltaTime;
+        }
+        //기본 속도로 복구
+        float release = 1 - Mathf.Abs(throttle);
+        speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
+
+        rb.velocity = transform.forward * speed;
+    }
+
 
     void Update()
     {

@@ -86,7 +86,10 @@ public class TargetController : MonoBehaviour
     {
         targetArrow.SetArrowVisible(show);
     }
-
+    public void SwitchWeapon(Missile missile)
+    {
+        targetLock.SwitchWeapon(missile);
+    }
     public TargetUI FindTargetUI()
     {
         foreach (TargetUI targetUI in targetUIs)

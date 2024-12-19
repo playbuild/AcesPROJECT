@@ -230,6 +230,7 @@ MonoBehaviour:
   isMainTarget: 1
   hideDistance: 3000
   uiObject: {fileID: 7852178435658271255}
+  blinkUIObject: {fileID: 3646369360702827384}
   blinkRepeatTime: 0.25
 --- !u!1 &7852178435658271255
 GameObject:
