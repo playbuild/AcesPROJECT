@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,7 +7,56 @@ public class PlayerFighterController : MonoBehaviour
     CameraController cameraController;
     UIController uiController;
 
+    float accelerateValue; // 컨트롤러로 얻어오는 값
+    float brakeValue;
+    float throttle; //쓰로틀 값
+
+    float rollValue;
+    float pitchValue;
+    float yawQValue;
+    float yawEValue;
+
     public float speed;
+
+    [Header("Aircraft Settings")]
+    public float maxSpeed = 301.7f; // 최대 속력
+    public float minSpeed = 20f; //최저 속력
+    public float defaultSpeed = 60f; // 기본 속도
+
+    [Header("Move Variables")]
+    public float throttleAmount;
+    public float accelerateAmount; // 가속 
+    public float brakeAmount;
+    public float calibrateAmount; // 기본 속도로의 복구 속도
+    public float rollAmount;
+    public float pitchAmount;
+    public float yawAmount;
+    public float rotateLerpAmount;
+
+    //public float lerpAmount;
+    //Vector2 rightStickValue;
+    Vector3 rotateValue;
+
+    [Header("High-G Turn")]
+    [SerializeField]
+    float highGFactor = 1.5f;
+    [SerializeField]
+    float highGTurnTime = 2.0f;
+
+    float highGCooldown;
+    float highGReciprocal;
+    bool isHighGPressed;
+    bool isHighGEnabled;
+
+    bool isHighGTurning;
+
+    [SerializeField]
+    List<JetEngineController> jetEngineControllers;
+
+    Rigidbody rb;
+    float speedReciprocal; // maxSpeed의 역수
+
+    // public gets
     public float Speed
     {
         get
@@ -14,51 +64,13 @@ public class PlayerFighterController : MonoBehaviour
             return speed;
         }
     }
-
-
-    public float throttleAmount;
-    public float rollAmount;
-    public float pitchAmount;
-    public float yawAmount;
-    public float rotateLerpAmount;
-    public float accelerateAmount; // 가속 
-    public float brakeAmount;
-
-    public float lerpAmount;
-
-    public float calibrateAmount; // 기본 속도로의 복구 속도
-    public float maxSpeed = 301.7f; // 최대 속력
-    public float minSpeed = 20f; //최저 속력
-    public float defaultSpeed = 60f; // 기본 속도
-
-    float rollValue;
-    float pitchValue;
-    float yawQValue;
-    float yawEValue;
-    float accelerateValue; // 컨트롤러로 얻어오는 값
-    float brakeValue;
-
-    float speedReciprocal; // maxSpeed의 역수
-    float throttle; //쓰로틀 값
-
-    Vector2 rightStickValue;
-    Vector3 rotateValue;
-    Rigidbody rb;
-
-    // public gets
-
+    public bool IsHighGTurning
+    {
+        get { return isHighGTurning; }
+    }
     public Vector3 RotateValue
     {
         get { return rotateValue; }
-    }
-
-    void Start()
-    {
-        uiController = GameManager.UIController;
-
-        rb = GetComponent<Rigidbody>();
-
-        cameraController = GetComponent<CameraController>();
     }
 
     void FixedUpdate()
@@ -111,6 +123,50 @@ public class PlayerFighterController : MonoBehaviour
         uiController.SetThrottle(throttle);
         uiController.SetHeading(transform.eulerAngles.y);
     }
+    void CheckHighGTurn(ref float accel, ref float brake, ref float highGPitchFactor)
+    {
+        isHighGTurning = false;
+
+        // Factor decreases 2 to 1
+        if (accelerateValue == 1 && brakeValue == 1) // Button
+        {
+            if (pitchValue < -0.7f)
+            {
+                if (isHighGEnabled == true)
+                {
+                    isHighGEnabled = false;
+                    isHighGPressed = true;
+                }
+
+                if (highGCooldown < 0) isHighGPressed = false;
+
+                if (isHighGEnabled == true || isHighGPressed == true)
+                {
+                    accel = 0;
+                    brake *= highGFactor * (1 + highGCooldown * highGReciprocal);
+                    highGPitchFactor = highGFactor * (1 + highGCooldown * highGReciprocal);
+
+                    highGCooldown -= Time.deltaTime;
+                    isHighGTurning = true;
+                }
+            }
+        }
+        else // Button Released
+        {
+            isHighGPressed = false;
+            isHighGEnabled = true;
+        }
+
+        if (isHighGPressed == false)
+        {
+            highGCooldown += Time.deltaTime * 2;
+            if (highGCooldown >= highGTurnTime)
+            {
+                highGCooldown = highGTurnTime;
+            }
+        }
+    }
+
     void Autopilot(out Vector3 rotateVector)
     {
         rotateVector = -transform.rotation.eulerAngles;
@@ -128,6 +184,8 @@ public class PlayerFighterController : MonoBehaviour
         float brake = brakeValue;
         float highGPitchFactor = 1;
 
+        // High-G Turn
+        CheckHighGTurn(ref accel, ref brake, ref highGPitchFactor);
         // === Rotation ===
         Vector3 rotateVector;
 
@@ -142,11 +200,11 @@ public class PlayerFighterController : MonoBehaviour
             rotateVector = new Vector3(pitchValue * pitchAmount * highGPitchFactor, (yawEValue - yawQValue) * yawAmount, -rollValue * rollAmount);
         }
         rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.deltaTime);
-        transform.Rotate(rotateValue * Time.deltaTime);
+        //transform.Rotate(rotateValue * Time.deltaTime);
 
         rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
         //비행기 전진
-        rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
+        //rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
 
         throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
 
@@ -167,11 +225,40 @@ public class PlayerFighterController : MonoBehaviour
         speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
 
         rb.velocity = transform.forward * speed;
+
+        transform.Translate(new Vector3(0, 0, speed * Time.deltaTime));
     }
 
+    void JetEngineControl()
+    {
+        foreach (JetEngineController jet in jetEngineControllers)
+        {
+            jet.InputValue = throttle;
+        }
+    }
+    void Start()
+    {
+        uiController = GameManager.UIController;
 
+        accelerateValue = 0;
+        brakeValue = 0;
+        rollValue = 0;
+        pitchValue = 0;
+        yawEValue = 0;
+        yawQValue = 0;
+
+        highGCooldown = highGTurnTime;
+        highGReciprocal = 1 / highGCooldown;
+        isHighGPressed = false;
+        isHighGEnabled = true;
+
+        rb = GetComponent<Rigidbody>();
+
+        cameraController = GetComponent<CameraController>();
+    }
     void Update()
     {
         SetUI();
+        JetEngineControl();
     }
 }

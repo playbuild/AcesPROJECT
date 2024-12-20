@@ -79,7 +79,6 @@ public class TargetLock : FollowTransformUI
         // Exceed lockable distance
         if (distance > lockDistance)
         {
-            Debug.Log(distance + "," + lockDistance);
             ResetLock();
             return;
         }

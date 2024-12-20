@@ -31,11 +31,22 @@ public class Missile : MonoBehaviour
     public Sprite missileFrameSprite;
     public Sprite missileFillSprite;
 
+    GameObject smokeTrailEffect;
+    public Transform smokeTrailPosition;
+
     public void Launch(Transform target, float launchSpeed, int layer)
     {
         this.target = target;
+
         speed = launchSpeed;
         gameObject.layer = layer;
+
+        smokeTrailEffect = GameManager.Instance.smokeTrailEffectObjectPool.GetPooledObject();
+        if (smokeTrailEffect != null)
+        {
+            smokeTrailEffect.GetComponent<SmokeTrail>()?.SetFollowTransform(smokeTrailPosition);
+            smokeTrailEffect.SetActive(true);
+        }
     }
 
     void Start()

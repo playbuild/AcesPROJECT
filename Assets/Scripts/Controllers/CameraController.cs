@@ -150,7 +150,6 @@ public class CameraController : MonoBehaviour
             rotateQuaternion = Quaternion.Lerp(thirdViewCameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
         }
         thirdViewCameraPivot.localRotation = rotateQuaternion;
-
         Vector3 adjustPosition = new Vector3(0, pitchValue * pitchAmount - Mathf.Abs(lookValue.y) * 1.5f, -zoomValue * zoomAmount);
         thirdViewCameraPivot.localPosition = thirdPivotOriginPosition + adjustPosition;
     }

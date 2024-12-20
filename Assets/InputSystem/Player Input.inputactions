@@ -192,17 +192,6 @@
                 },
                 {
                     "name": "",
-                    "id": "c69c4937-8921-4547-844f-9063140e2511",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "8be9275b-1340-4f38-8afb-d7c6b9250a23",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -330,6 +319,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Yaw E",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "67e729aa-c2cb-40b7-b1d8-6ad45630e945",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
