@@ -359,7 +359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &52111078
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2432,7 +2432,6 @@ GameObject:
   m_Component:
   - component: {fileID: 226483133}
   - component: {fileID: 226483131}
-  - component: {fileID: 226483132}
   m_Layer: 0
   m_Name: Cockpit View
   m_TagString: Untagged
@@ -2491,14 +2490,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &226483132
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 226483130}
-  m_Enabled: 1
 --- !u!4 &226483133
 Transform:
   m_ObjectHideFlags: 0
@@ -4200,7 +4191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &489761307
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5483,7 +5474,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &611486475
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7618,7 +7609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolObject: {fileID: 1719494343402886023, guid: 292d9cbae8021c94eba11758b2b15537, type: 3}
-  initPoolAmount: 1200
+  initPoolAmount: 120
 --- !u!4 &727844541
 Transform:
   m_ObjectHideFlags: 0
@@ -7649,7 +7640,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &736616407
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10105,7 +10096,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &942185210
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12730,6 +12721,8 @@ MonoBehaviour:
   rotateLerpAmount: 4
   highGFactor: 1.2
   highGTurnTime: 2
+  stallSpeed: 25
+  gravityFactor: 5
   jetEngineControllers:
   - {fileID: 1827950893}
   - {fileID: 1292617277}
@@ -13369,7 +13362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1095357290
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14081,6 +14074,59 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1121154461
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1121154462}
+  - component: {fileID: 1121154463}
+  m_Layer: 0
+  m_Name: AlertUIController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1121154462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121154461}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1146996355}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1121154463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121154461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f55dfe979077ad4ab2fd5a925f3ced1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  caution: {fileID: 474873755}
+  warning: {fileID: 181580644}
+  missileAlert: {fileID: 393785756}
+  pullUp: {fileID: 1095357289}
+  stalling: {fileID: 942185209}
+  damaged: {fileID: 1419085410}
+  autopilot: {fileID: 736616406}
+  fire: {fileID: 489761306}
+  missileReloading: {fileID: 1530766516}
 --- !u!1 &1146996354
 GameObject:
   m_ObjectHideFlags: 0
@@ -14112,6 +14158,7 @@ Transform:
   m_Children:
   - {fileID: 1940578658}
   - {fileID: 590899195}
+  - {fileID: 1121154462}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1155624386
@@ -16171,7 +16218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolObject: {fileID: 8934914647020654505, guid: cce8e5bb3d829094bae8bd671641ac90, type: 3}
-  initPoolAmount: 1200
+  initPoolAmount: 120
 --- !u!4 &1326760871
 Transform:
   m_ObjectHideFlags: 0
@@ -16959,7 +17006,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1419085411
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18785,7 +18832,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1530766517
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26513,7 +26560,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2028188953}
   - component: {fileID: 2028188951}
-  - component: {fileID: 2028188952}
   m_Layer: 0
   m_Name: 1st and no Cockpit View
   m_TagString: Untagged
@@ -26572,14 +26618,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &2028188952
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028188950}
-  m_Enabled: 1
 --- !u!4 &2028188953
 Transform:
   m_ObjectHideFlags: 0
@@ -27139,7 +27177,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2066281195
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27212,7 +27250,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2084664586}
   - component: {fileID: 2084664584}
-  - component: {fileID: 2084664585}
   m_Layer: 0
   m_Name: 3rd View
   m_TagString: Untagged
@@ -27271,14 +27308,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &2084664585
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2084664583}
-  m_Enabled: 1
 --- !u!4 &2084664586
 Transform:
   m_ObjectHideFlags: 0

@@ -50,6 +50,12 @@ public class PlayerFighterController : MonoBehaviour
 
     bool isHighGTurning;
 
+    [Header("Misc.")]
+    [SerializeField]
+    float stallSpeed;
+    [SerializeField]
+    float gravityFactor;
+
     [SerializeField]
     List<JetEngineController> jetEngineControllers;
 
@@ -63,6 +69,18 @@ public class PlayerFighterController : MonoBehaviour
         {
             return speed;
         }
+    }
+
+    bool isAutoPilot;
+    public bool IsAutoPilot
+    {
+        get { return isAutoPilot; }
+    }
+
+    bool isStalling;
+    public bool IsStalling
+    {
+        get { return isStalling; }
     }
     public bool IsHighGTurning
     {
@@ -177,6 +195,24 @@ public class PlayerFighterController : MonoBehaviour
         rotateVector.z = Mathf.Clamp(rotateVector.z * 2, -rollAmount, rollAmount);
         rotateVector.y = 0;
     }
+    void Stall()
+    {
+        Quaternion targetRotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
+        Quaternion diffQuaternion = Quaternion.Inverse(transform.rotation) * targetRotation;
+
+        Vector3 diffAngle = diffQuaternion.eulerAngles;
+
+        // Adjustment
+        if (diffAngle.x > 180) diffAngle.x -= 360;
+        if (diffAngle.y > 180) diffAngle.y -= 360;
+        if (diffAngle.z > 180) diffAngle.z -= 360;
+        diffAngle.x = Mathf.Clamp(diffAngle.x, -pitchAmount, pitchAmount);
+        diffAngle.y = Mathf.Clamp(diffAngle.y, -yawAmount, yawAmount);
+        diffAngle.z = Mathf.Clamp(diffAngle.z, -rollAmount, rollAmount);
+
+        rotateValue = Vector3.Lerp(rotateValue, diffAngle, rotateLerpAmount * Time.deltaTime);
+    }
+
 
     void MoveAircraft()
     {
@@ -188,24 +224,33 @@ public class PlayerFighterController : MonoBehaviour
         CheckHighGTurn(ref accel, ref brake, ref highGPitchFactor);
         // === Rotation ===
         Vector3 rotateVector;
-
-        // 오토파일럿 (Press Q + E)
-        if (yawQValue == 1 && yawEValue == 1)
+        if (speed < stallSpeed)
         {
-            Autopilot(out rotateVector);
+            // Ignore all rotation input and head to the ground
+            isStalling = true;
+            Stall();
         }
-        // 비행기 회전
         else
         {
-            rotateVector = new Vector3(pitchValue * pitchAmount * highGPitchFactor, (yawEValue - yawQValue) * yawAmount, -rollValue * rollAmount);
+            isStalling = false;
+
+            // 오토파일럿 (Press Q + E)
+            if (yawQValue == 1 && yawEValue == 1)
+            {
+                isAutoPilot = true;
+                Autopilot(out rotateVector);
+            }
+            // 비행기 회전
+            else
+            {
+                isAutoPilot = false;
+                rotateVector = new Vector3(pitchValue * pitchAmount * highGPitchFactor, (yawEValue - yawQValue) * yawAmount, -rollValue * rollAmount);
+            }
+            rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.deltaTime);
         }
-        rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.deltaTime);
-        //transform.Rotate(rotateValue * Time.deltaTime);
 
         rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
         //비행기 전진
-        //rb.velocity = transform.forward * speed * Time.fixedDeltaTime;
-
         throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
 
         //비행기 가속
@@ -224,9 +269,11 @@ public class PlayerFighterController : MonoBehaviour
         float release = 1 - Mathf.Abs(throttle);
         speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
 
-        rb.velocity = transform.forward * speed;
+        // Gravity
+        float gravityFallByPitch = gravityFactor * Mathf.Sin(transform.eulerAngles.x * Mathf.Deg2Rad);
+        speed += gravityFallByPitch * Time.deltaTime;
 
-        transform.Translate(new Vector3(0, 0, speed * Time.deltaTime));
+        rb.velocity = transform.forward * speed;
     }
 
     void JetEngineControl()
@@ -262,3 +309,4 @@ public class PlayerFighterController : MonoBehaviour
         JetEngineControl();
     }
 }
+
