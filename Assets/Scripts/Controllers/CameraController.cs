@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
+    public float sensitivityX = 1.0f;
+    public float sensitivityY = 1.0f;
+    public float rotationSpeed = 10f;
     public enum CameraIndex
     {
         ThirdView,
@@ -90,20 +93,33 @@ public class CameraController : MonoBehaviour
     //카메라 모드에 따른 시점 변경 조절
     void Rotate1stViewCamera()
     {
-        Quaternion rotateQuaternion;
+        Transform cameraTransform = currentCamera.transform;
+        Quaternion targetRotation;
 
         if (lockOnTargetTransform != null)
         {
-            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+            targetRotation = Quaternion.Lerp(cameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+            cameraPivot.localRotation = targetRotation;
         }
         else
         {
+            Vector3 targetEulerAngles = cameraPivot.localRotation.eulerAngles;
+
+            targetEulerAngles.x -= lookInputValue.y * sensitivityY * 40 * Time.deltaTime;
+            targetEulerAngles.y += lookInputValue.x * sensitivityX * 40 * Time.deltaTime;
+
+            targetEulerAngles.x = Mathf.Clamp(targetEulerAngles.x, -80f, 80f);
+
+            Quaternion currentRotation = cameraPivot.localRotation;
+
             Vector3 rotateValue = new Vector3(lookValue.y * -90, lookValue.x * 180, 0);
-            rotateQuaternion = Quaternion.Lerp(cameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+            targetRotation = Quaternion.Lerp(cameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+            //targetRotation = Quaternion.Euler(targetEulerAngles);
+            cameraPivot.localRotation = Quaternion.Lerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
-        cameraPivot.localRotation = rotateQuaternion;
-        uiController.AdjustFirstViewUI(rotateQuaternion.eulerAngles);
+        cameraPivot.localRotation = targetRotation;
+        uiController.AdjustFirstViewUI(targetRotation.eulerAngles);
     }
 
     void Rotate1stViewWithCockpitCamera()
@@ -137,21 +153,27 @@ public class CameraController : MonoBehaviour
     void Rotate3rdViewCamera()
     {
         Transform cameraTransform = currentCamera.transform;
-        Quaternion rotateQuaternion;
-
+        Quaternion targetRotation;
         if (lockOnTargetTransform != null)
         {
-            rotateQuaternion = Quaternion.Lerp(thirdViewCameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
-            thirdViewCameraPivot.localRotation = rotateQuaternion;
+            // Lock-On 대상이 있을 경우
+            targetRotation = Quaternion.Lerp(thirdViewCameraPivot.localRotation, CalculateLockOnRotation(), lerpAmount * Time.deltaTime);
+            thirdViewCameraPivot.localRotation = targetRotation;
         }
         else
         {
-            Vector3 rotateValue = new Vector3(lookInputValue.y * -90, lookInputValue.x * 180, rollValue * rollAmount);
-            rotateQuaternion = Quaternion.Lerp(thirdViewCameraPivot.localRotation, Quaternion.Euler(rotateValue), lerpAmount * Time.deltaTime);
+            // 마우스 입력값에 따라 카메라 회전
+            Vector3 targetEulerAngles = thirdViewCameraPivot.localRotation.eulerAngles;
+            // 마우스 입력값을 기반으로 회전 각도 조정
+            targetEulerAngles.x -= lookInputValue.y * sensitivityY * 40 * Time.deltaTime;
+            targetEulerAngles.y += lookInputValue.x * sensitivityX * 40 * Time.deltaTime;
+            // 각도 제한
+            targetEulerAngles.x = Mathf.Clamp(targetEulerAngles.x, -80f, 80f);
+            // 스무스한 회전 적용
+            Quaternion currentRotation = thirdViewCameraPivot.localRotation;
+            targetRotation = Quaternion.Euler(targetEulerAngles);
+            thirdViewCameraPivot.localRotation = Quaternion.Lerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
-        thirdViewCameraPivot.localRotation = rotateQuaternion;
-        Vector3 adjustPosition = new Vector3(0, pitchValue * pitchAmount - Mathf.Abs(lookValue.y) * 1.5f, -zoomValue * zoomAmount);
-        thirdViewCameraPivot.localPosition = thirdPivotOriginPosition + adjustPosition;
     }
     public Camera GetActiveCamera()
     {

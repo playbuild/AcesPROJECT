@@ -11,6 +11,10 @@ public class Missile : MonoBehaviour
     float speed;
     public string missileName;
 
+    [Header("Properties")]
+
+    [SerializeField]
+    float damage;
 
     public bool isSpecialWeapon;
     public float maxSpeed;
@@ -73,6 +77,8 @@ public class Missile : MonoBehaviour
     //미사일 충돌 이후 폭발
     void OnCollisionEnter(Collision other)
     {
+        other.gameObject.GetComponent<TargetObject>()?.OnDamage(damage);
+
         Explode();
         DisableMissile();
     }

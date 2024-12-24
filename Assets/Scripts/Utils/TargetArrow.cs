@@ -53,6 +53,11 @@ public class TargetArrow : MonoBehaviour
 
     public void SetTarget(TargetObject target)
     {
+        if (target == null)
+        {
+            SetArrowVisible(false);
+            return;
+        }
         targetObject = target;
         targetNameText.text = targetObject.Info.ObjectName;
         targetNicknameText.text = targetObject.Info.ObjectNickname;
@@ -61,6 +66,9 @@ public class TargetArrow : MonoBehaviour
 
     public void SetArrowVisible(bool visible)
     {
+        if (targetObject == null)
+            return;
+
         drawLines = visible;
         targetNameText.gameObject.SetActive(visible);
         targetNicknameText.gameObject.SetActive(visible);
@@ -132,7 +140,10 @@ public class TargetArrow : MonoBehaviour
     void Update()
     {
         if (targetObject == null)
+        {
+            SetArrowVisible(false);
             return;
+        }
 
         cameraAttachedTransform.LookAt(targetObject.transform);
         arrowTransform.eulerAngles = cameraAttachedTransform.localEulerAngles;

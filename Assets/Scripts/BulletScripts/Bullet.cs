@@ -11,6 +11,9 @@ public class Bullet : MonoBehaviour
     public float speed;
     public float lifetime;
 
+    [SerializeField]
+    float damage;
+
     public void Fire(float launchSpeed, int layer)
     {
         speed += launchSpeed;
@@ -19,8 +22,26 @@ public class Bullet : MonoBehaviour
     }
     void OnCollisionEnter(Collision other)
     {
-        CreateHitEffect();
+        ObjectPools effectPool;
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            effectPool = GameManager.Instance.groundHitEffectObjectPool;
+        }
+        else
+        {
+            effectPool = GameManager.Instance.bulletHitEffectObjectPool;
+            other.gameObject.GetComponent<TargetObject>()?.OnDamage(damage);
+        }
+        CreateHitEffect(effectPool);
         DisableBullet();
+    }
+    void CreateHitEffect(ObjectPools effectPool)
+    {
+        // Instantiate in world space
+        GameObject effect = effectPool.GetPooledObject();
+        effect.transform.position = transform.position;
+        effect.transform.rotation = transform.rotation;
+        effect.SetActive(true);
     }
     void DisableBullet()
     {
@@ -32,15 +53,7 @@ public class Bullet : MonoBehaviour
         {
             transform.Translate(new Vector3(0, 0, speed * Time.deltaTime));
         }
-        void CreateHitEffect()
-        {
-            // Instantiate in world space
-            ObjectPools effectPool = GameManager.Instance.bulletHitEffectObjectPool;
-            GameObject effect = effectPool.GetPooledObject();
-            effect.transform.position = transform.position;
-            effect.transform.rotation = transform.rotation;
-            effect.SetActive(true);
-        }
+
         void Awake()
         {
             rb = GetComponent<Rigidbody>();

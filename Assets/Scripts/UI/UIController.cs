@@ -74,6 +74,8 @@ public class UIController : MonoBehaviour
     [SerializeField]
     Color warningColor;
 
+    int score = 0;
+
     public void SetSpeed(int speed)
     {
         string text = string.Format("<mspace=18>{0}</mspace>", speed);
@@ -153,6 +155,13 @@ public class UIController : MonoBehaviour
 
         firstCenterViewTransform.anchoredPosition = convertedRotation * canvasResolution;
     }
+    public void SetScoreText(int score)
+    {
+        this.score += score;
+        string text = string.Format("SCORE <mspace=18>{0}</mspace>", this.score);
+        scoreText.text = text;
+    }
+
     public void SetTargetText(ObjectInfo objectInfo)
     {
         if (objectInfo == null || objectInfo.ObjectName == "")

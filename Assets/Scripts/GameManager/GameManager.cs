@@ -10,10 +10,12 @@ public class GameManager : MonoBehaviour
     private static GameManager instance = null;
 
     [Header("Object Pools")]
+    public ObjectPools smokeTrailDamagePool;
     public ObjectPools bulletObjectPool;
     public ObjectPools missileObjectPool;
     public ObjectPools specialWeaponObjectPool;
     public ObjectPools bulletHitEffectObjectPool;
+    public ObjectPools groundHitEffectObjectPool;
     public ObjectPools BigExplosionPool;
     public ObjectPools smokeTrailEffectObjectPool;
 
@@ -140,7 +142,15 @@ public class GameManager : MonoBehaviour
         }
         return objectsWithinDistance;
     }
-
+    public void CreateDamageSmokeEffect(Transform transform)
+    {
+        GameObject smokeTrailObject = smokeTrailDamagePool.GetPooledObject();
+        if (smokeTrailObject != null)
+        {
+            smokeTrailObject.SetActive(true);
+            smokeTrailObject.GetComponent<SmokeTrail>()?.SetFollowTransform(transform);
+        }
+    }
     void Awake()
     {
         if (instance == null)

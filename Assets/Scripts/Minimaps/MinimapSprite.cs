@@ -14,6 +14,22 @@ public class MinimapSprite : MonoBehaviour
 
     [SerializeField]
     bool showBorderIndicator = false;
+
+    [SerializeField]
+    float blinkRepeatTime = 0.2f;
+
+    public void SetMinimapSpriteBlink(bool blink)
+    {
+        if (blink == true)
+        {
+            InvokeRepeating("Blink", blinkRepeatTime, blinkRepeatTime);
+        }
+        else
+        {
+            CancelInvoke();
+            spriteRenderer.color = Color.white;
+        }
+    }
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

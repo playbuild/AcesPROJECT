@@ -305,6 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   missileName: SideWinder
+  damage: 50
   isSpecialWeapon: 0
   maxSpeed: 305
   accelAmount: 25

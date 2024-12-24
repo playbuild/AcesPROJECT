@@ -51,6 +51,9 @@ public class WeaponController : MonoBehaviour
     Missile specialWeapon;
     WeaponSlot[] spwSlots = new WeaponSlot[2];
 
+    [SerializeField]
+    GunCrosshair gunCrosshair;
+
     // Weapon Callbacks
     public void Fire(InputAction.CallbackContext context)
     {
@@ -175,7 +178,7 @@ public class WeaponController : MonoBehaviour
         bulletScript.Fire(fighterController.Speed, gameObject.layer);
         bulletCnt--;
     }
-    public void ChangeTarget(InputAction.CallbackContext context)
+    public void OnChangeTarget(InputAction.CallbackContext context)
     {
         if (context.action.phase == InputActionPhase.Started)
         {
@@ -193,22 +196,35 @@ public class WeaponController : MonoBehaviour
         
         else if (context.action.phase == InputActionPhase.Canceled)
         {
-            // Hold
+            // Hold : Focus
             if (isFocusingTarget == true)
             {
                 GameManager.CameraController.LockOnTarget(null);
             }
-            // Press
+            // Press : Change
             else
             {
-                TargetObject newTarget = GetNextTarget();
-                if (newTarget == null || (newTarget != null && newTarget == target)) return;
-
-                target = GetNextTarget();
-                target.isNextTarget = false;
-                GameManager.TargetController.ChangeTarget(target);
+                ChangeTarget();
             }
         }
+    }
+    public void ChangeTarget()
+    {
+        TargetObject newTarget = GetNextTarget();
+        if (newTarget == null)   // No target
+        {
+            GameManager.TargetController.ChangeTarget(null);
+            gunCrosshair.SetTarget(null);
+            target = null;
+
+            return;
+        }
+
+        if (newTarget != null && newTarget == target) return;
+        target = GetNextTarget();
+        target.isNextTarget = false;
+        GameManager.TargetController.ChangeTarget(target);
+        gunCrosshair.SetTarget(target.transform);
     }
     TargetObject GetNextTarget()
     {
