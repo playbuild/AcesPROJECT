@@ -283,6 +283,7 @@ public class PlayerFighterController : MonoBehaviour
             jet.InputValue = throttle;
         }
     }
+
     void Start()
     {
         uiController = GameManager.UIController;

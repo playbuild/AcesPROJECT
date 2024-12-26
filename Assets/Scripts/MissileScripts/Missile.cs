@@ -5,6 +5,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Missile : MonoBehaviour
 {
+    Transform parent;
     Rigidbody rb;
 
     Transform target;
@@ -38,6 +39,9 @@ public class Missile : MonoBehaviour
     GameObject smokeTrailEffect;
     public Transform smokeTrailPosition;
 
+    bool isHit = false;
+    bool isDisabled = false;
+
     public void Launch(Transform target, float launchSpeed, int layer)
     {
         this.target = target;
@@ -67,6 +71,8 @@ public class Missile : MonoBehaviour
 
         if (angle > boresightAngle)
         {
+            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
+            isDisabled = true;
             target = null;
             return;
         }
@@ -77,7 +83,11 @@ public class Missile : MonoBehaviour
     //미사일 충돌 이후 폭발
     void OnCollisionEnter(Collision other)
     {
-        other.gameObject.GetComponent<TargetObject>()?.OnDamage(damage);
+        if (target != null && other.gameObject == target.gameObject)
+        {
+            isHit = true;
+        }
+        other.gameObject.GetComponent<TargetObject>()?.OnDamage(damage, gameObject.layer);
 
         Explode();
         DisableMissile();
@@ -93,6 +103,12 @@ public class Missile : MonoBehaviour
 
     void DisableMissile()
     {
+        if (target != null && isDisabled == false && isHit == false)
+        {
+            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
+        }
+
+        transform.parent = parent;
         gameObject.SetActive(false);
     }
     void Awake()

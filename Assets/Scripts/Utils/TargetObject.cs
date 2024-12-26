@@ -14,6 +14,8 @@ public class TargetObject : MonoBehaviour
     protected float hp;
     public bool isNextTarget;
 
+    int lastHitLayer;
+
     protected MinimapSprite minimapSprite;
 
     protected TargetUI targetUI;
@@ -61,12 +63,20 @@ public class TargetObject : MonoBehaviour
             GameManager.PlayerAircraft.OnScore(objectInfo.Score);
         }
     }
-    public virtual void OnDamage(float damage)
+    public virtual void OnDamage(float damage, int layer)
     {
         hp -= damage;
+        lastHitLayer = layer;
+
+        if (lastHitLayer == LayerMask.NameToLayer("Player")) // Hit by Player
+        {
+            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Hit);
+        }
+
         if (hp <= 0)
         {
             DestroyObject();
+            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
         }
     }
     protected virtual void DestroyObject()

@@ -20,6 +20,8 @@ public class UIController : MonoBehaviour
     TextMeshProUGUI speedText;
     [SerializeField]
     TextMeshProUGUI altitudeText;
+    [SerializeField]
+    AlertUIController alertUIController;
 
     // Upper Left
     [Header("Upper Left UI")]
@@ -69,6 +71,9 @@ public class UIController : MonoBehaviour
     [SerializeField]
     Material fontMaterial;
 
+    [Header("Colors")]
+    [SerializeField]
+    Color cautionColor;
     [SerializeField]
     Color normalColor;
     [SerializeField]
@@ -174,6 +179,28 @@ public class UIController : MonoBehaviour
             string text = string.Format("TARGET {0} +<mspace=18>{1}</mspace>", objectName, objectInfo.Score);
             targetText.text = text;
         }
+    }
+    public void SetDamage(int damage)
+    {
+        string text = string.Format("<align=left>DMG<line-height=0>\n<align=right>{0}%<line-height=0>", damage);
+        dmgText.text = text;
+
+        if (damage < 34)
+        {
+            aircraftImage.color = GameManager.NormalColor;
+        }
+        else if (damage < 67)
+        {
+            aircraftImage.color = cautionColor;
+        }
+        else
+        {
+            aircraftImage.color = GameManager.WarningColor;
+        }
+    }
+    public void SetLabel(AlertUIController.LabelEnum labelEnum)
+    {
+        alertUIController.SetLabel(labelEnum);
     }
     void Update()
     {

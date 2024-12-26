@@ -28,9 +28,9 @@ public class EnemyAircraft : TargetObject
         Destroy(gameObject);
     }
 
-    public override void OnDamage(float damage)
+    public override void OnDamage(float damage, int layer)
     {
-        base.OnDamage(damage);
+        base.OnDamage(damage, layer);
 
         for (int i = 0; i < smokeTransformParent.childCount; i++)
         {
