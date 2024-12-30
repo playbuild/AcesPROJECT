@@ -15,6 +15,9 @@ public class ObjectInfo : ScriptableObject
     int hp;
     [SerializeField]
     bool mainTarget;
+
+    [SerializeField]
+    float warningDistance;
     public string ObjectName
     {
         get { return objectName; }
@@ -34,5 +37,9 @@ public class ObjectInfo : ScriptableObject
     public bool MainTarget
     {
         get { return mainTarget; }
+    }
+    public float WarningDistance
+    {
+        get { return warningDistance; }
     }
 }

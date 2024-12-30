@@ -5056,20 +5056,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missileName: QAAM
   damage: 50
-  isSpecialWeapon: 0
-  maxSpeed: 305
-  accelAmount: 25
-  turningForce: 0.2
+  isSpecialWeapon: 1
+  maxSpeed: 320
+  accelAmount: 80
+  turningForce: 2
   targetSearchSpeed: 80
   lockDistance: 2500
-  boresightAngle: 90
+  boresightAngle: 150
   lifetime: 7
   explosionPrefab: {fileID: 198917022394846920, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
   cooldown: 4
   payload: 20
   missileFrameSprite: {fileID: 21300000, guid: 148878c88a6edf642a4a5e0e1dfba395, type: 3}
   missileFillSprite: {fileID: 21300000, guid: a878b967282bdd543a182d8c23f66cae, type: 3}
-  smokeTrailPosition: {fileID: 0}
+  smokeTrailPosition: {fileID: 8284499033344690831}
 --- !u!1001 &1257894389118407296
 PrefabInstance:
   m_ObjectHideFlags: 0

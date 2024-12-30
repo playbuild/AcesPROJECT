@@ -128,8 +128,8 @@ public class WeaponController : MonoBehaviour
         missile.SetActive(true);
 
         Missile missileScript = missile.GetComponent<Missile>();
-        Transform targetTrasnform = (target != null && GameManager.TargetController.IsLocked == true) ? target.transform : null;
-        missileScript.Launch(targetTrasnform, fighterController.Speed + 15, gameObject.layer);
+        TargetObject targetObject = (target != null && GameManager.TargetController.IsLocked == true) ? target : null;
+        missileScript.Launch(targetObject, fighterController.Speed + 15, gameObject.layer);
 
         missileCnt--;
 
@@ -213,6 +213,7 @@ public class WeaponController : MonoBehaviour
         TargetObject newTarget = GetNextTarget();
         if (newTarget == null)   // No target
         {
+            GameManager.CameraController.LockOnTarget(null);
             GameManager.TargetController.ChangeTarget(null);
             gunCrosshair.SetTarget(null);
             target = null;

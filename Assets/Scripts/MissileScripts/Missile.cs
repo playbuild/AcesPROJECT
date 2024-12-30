@@ -8,7 +8,7 @@ public class Missile : MonoBehaviour
     Transform parent;
     Rigidbody rb;
 
-    Transform target;
+    TargetObject target;
     float speed;
     public string missileName;
 
@@ -22,11 +22,15 @@ public class Missile : MonoBehaviour
     public float accelAmount;
     public float turningForce;
 
-    public float targetSearchSpeed;
-    public float lockDistance;
+    [SerializeField]
+    [Range(0, 1)]
+    protected float smartTrackingRate = 0.3f;
 
     public float boresightAngle;
     public float lifetime;
+
+    public float targetSearchSpeed;
+    public float lockDistance;
 
     public ParticleSystem explosionPrefab;
 
@@ -41,10 +45,19 @@ public class Missile : MonoBehaviour
 
     bool isHit = false;
     bool isDisabled = false;
+    bool hasWarned = false;
 
-    public void Launch(Transform target, float launchSpeed, int layer)
+    Rigidbody targetRigidbody = null;
+
+    public void Launch(TargetObject target, float launchSpeed, int layer)
     {
         this.target = target;
+
+        targetRigidbody = target?.GetComponent<Rigidbody>();
+        // Send Message to object that it is locked on
+        isDisabled = (target == null);
+
+        target?.AddLockedMissile(this);
 
         speed = launchSpeed;
         gameObject.layer = layer;
@@ -61,23 +74,48 @@ public class Missile : MonoBehaviour
     {
         Invoke("DisableMissile", lifetime);
     }
+    Vector3 GetPredictedTargetPosition()
+    {
+        if (targetRigidbody == null) return target.transform.position;
+
+        Vector3 predictedPos = target.transform.position;
+        float timeToCatchUp = MathHelper.GetTimeToCatchUp(targetRigidbody, rb);
+        float angle = Vector3.Angle(transform.forward, target.transform.forward);
+
+        if (timeToCatchUp > 0)
+        {
+            // Considering target velocity
+            predictedPos += timeToCatchUp * targetRigidbody.velocity;
+        }
+        else
+        {
+            // Not considering target velocity
+            float distance = Vector3.Distance(target.transform.position, transform.position);
+            predictedPos += (distance / speed) * (Mathf.Cos(angle) + 1) * 0.5f * targetRigidbody.velocity;
+        }
+
+        return predictedPos;
+    }
     void LookAtTarget()
     {
         if (target == null)
             return;
 
-        Vector3 targetDir = target.position - transform.position;
+        Vector3 targetPos = Vector3.Lerp(target.transform.position, GetPredictedTargetPosition(), smartTrackingRate);
+        Vector3 targetDir = target.transform.position - transform.position;
         float angle = Vector3.Angle(targetDir, transform.forward);
 
         if (angle > boresightAngle)
         {
             GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
             isDisabled = true;
+            // Send Message to object that it is no more locked on
+            target.GetComponent<TargetObject>()?.RemoveLockedMissile(this);
             target = null;
             return;
         }
 
-        Quaternion lookRotation = Quaternion.LookRotation(target.position - transform.position);
+        Quaternion lookRotation = Quaternion.LookRotation(targetPos - transform.position);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turningForce * Time.deltaTime);
     }
     //미사일 충돌 이후 폭발
@@ -100,16 +138,41 @@ public class Missile : MonoBehaviour
         effect.transform.rotation = transform.rotation;
         effect.SetActive(true);
     }
+    public void RemoveTarget()
+    {
+        target = null;
+        DisableMissile();
+    }
+    public bool HasWarned
+    {
+        get { return hasWarned; }
+        set { hasWarned = value; }
+    }
 
     void DisableMissile()
     {
-        if (target != null && isDisabled == false && isHit == false)
+        hasWarned = false;
+
+        if (target != null)
+        {
+            target.RemoveLockedMissile(this);
+
+            if (isDisabled == false && isHit == false)
+            {
+                ShowMissedLabel();
+            }
+        }
+
+        isDisabled = true;
+        transform.parent = parent;
+        gameObject.SetActive(false);
+    }
+    void ShowMissedLabel()
+    {
+        if (gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
         }
-
-        transform.parent = parent;
-        gameObject.SetActive(false);
     }
     void Awake()
     {

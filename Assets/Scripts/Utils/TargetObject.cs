@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TargetObject : MonoBehaviour
@@ -15,6 +16,9 @@ public class TargetObject : MonoBehaviour
     public bool isNextTarget;
 
     int lastHitLayer;
+
+    List<Missile> lockedMissiles = new List<Missile>();
+    protected bool isWarning;
 
     protected MinimapSprite minimapSprite;
 
@@ -77,6 +81,57 @@ public class TargetObject : MonoBehaviour
         {
             DestroyObject();
             GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
+        }
+    }
+    public void AddLockedMissile(Missile missile)
+    {
+        lockedMissiles.Add(missile);
+        Debug.Log("Missile Added");
+    }
+
+    public void RemoveLockedMissile(Missile missile)
+    {
+        lockedMissiles.Remove(missile);
+        Debug.Log("Missile Removed");
+    }
+    public virtual void OnWarning()
+    {
+
+    }
+
+    protected void CheckMissileDistance()
+    {
+        bool existWarningMissile = false;
+        bool executeWarning = false;
+        foreach (Missile missile in lockedMissiles)
+        {
+            float distance = Vector3.Distance(missile.transform.position, transform.position);
+
+            if (distance < Info.WarningDistance)
+            {
+                existWarningMissile = true;
+
+                if (missile.HasWarned == false)
+                {
+                    executeWarning = true;
+                    missile.HasWarned = true;
+                    break;
+                }
+            }
+        }
+
+        if (executeWarning)
+        {
+            OnWarning();
+        }
+
+        if (existWarningMissile == true)
+        {
+            isWarning = true;
+        }
+        else
+        {
+            isWarning = false;
         }
     }
     protected virtual void DestroyObject()

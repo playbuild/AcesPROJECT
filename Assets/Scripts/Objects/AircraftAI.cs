@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AircraftAI : MonoBehaviour
+public class AircraftAI : TargetObject
 {
     [Header("Aircraft Settings")]
     [SerializeField]
@@ -15,9 +15,6 @@ public class AircraftAI : MonoBehaviour
     float speed;
     float targetSpeed;
     bool isAcceleration;
-
-    //[SerializeField]
-    //float speedLerpAmount;
 
     [Header("Accel/Rotate Values")]
     [SerializeField]
@@ -42,11 +39,20 @@ public class AircraftAI : MonoBehaviour
     float turningTime;
     float currentTurningTime;
 
+    [Header("Waypoint")]
     [SerializeField]
     List<Transform> initialWaypoints;
     Queue<Transform> waypointQueue;
 
-    //Transform currentWaypoint;
+    [SerializeField]
+    float waypointMinHeight;
+    [SerializeField]
+    float waypointMaxHeight;
+
+    [SerializeField]
+    BoxCollider areaCollider;
+
+    Vector3 currentWaypoint;
 
     float prevWaypointDistance;
     float waypointDistance;
@@ -57,17 +63,16 @@ public class AircraftAI : MonoBehaviour
     float rotateAmount;
     float zRotateValue;
 
+    [Header("Misc.")]
     [SerializeField]
-    float newWaypointDistance;
-    [SerializeField]
-    float waypointMinHeight;
-    [SerializeField]
-    float waypointMaxHeight;
+    [Range(0, 1)]
+    float evasionRate = 0.5f;
 
     [SerializeField]
-    BoxCollider areaCollider;
+    float newWaypointDistance = 500;
 
-    Vector3 currentWaypoint;
+    [SerializeField]
+    List<JetEngineController> jetEngineControllers;
 
     [SerializeField]
     GameObject waypointObject;
@@ -80,6 +85,13 @@ public class AircraftAI : MonoBehaviour
             Random.Range(bounds.min.z, bounds.max.z)
         );
     }
+    protected virtual Vector3 CreateWaypoint()
+    {
+        if (areaCollider != null)
+            return CreateWaypointWithinArea();
+        else
+            return CreateWaypointAroundItself();
+    }
     void RandomizeSpeedAndTurn()
     {
         // Speed
@@ -90,12 +102,11 @@ public class AircraftAI : MonoBehaviour
         currentTurningForce = Random.Range(0.5f * turningForce, turningForce);
         turningTime = 1 / currentTurningForce;
     }
-    void CreateWaypoint()
+    Vector3 CreateWaypointWithinArea()
     {
-        float distance = Random.Range(newWaypointDistance * 0.7f, newWaypointDistance);
+        if (areaCollider == null) return currentWaypoint;
+
         float height = Random.Range(waypointMinHeight, waypointMaxHeight);
-        float angle = Random.Range(0, 360);
-        Vector3 directionVector = new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
         Vector3 waypointPosition = RandomPointInBounds(areaCollider.bounds);
 
         RaycastHit hit;
@@ -109,19 +120,51 @@ public class AircraftAI : MonoBehaviour
         else
         {
             Physics.Raycast(waypointPosition, Vector3.up, out hit);
-            waypointPosition.y += height + hit.distance;
+
+            if (hit.distance == 0)
+            {
+                waypointPosition.y = height;
+            }
+            else
+            {
+                waypointPosition.y += height + hit.distance;
+            }
         }
 
-        Instantiate(waypointObject, waypointPosition, Quaternion.identity);
-
-        currentWaypoint = waypointPosition;
+        return waypointPosition;
     }
 
-    void ChangeWaypoint()
+    Vector3 CreateWaypointAroundItself()
+    {
+        float distance = Random.Range(newWaypointDistance * 0.7f, newWaypointDistance);
+        float height = Random.Range(waypointMinHeight, waypointMaxHeight);
+        float angle = Random.Range(0, 360);
+        Vector3 directionVector = new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
+        Vector3 waypointPosition = transform.position + directionVector * distance;
+        Vector3 raycastPosition = waypointPosition;
+        raycastPosition.y = 5000;
+
+        RaycastHit hit;
+        Physics.Raycast(raycastPosition, Vector3.down, out hit);
+
+        if (hit.distance != 0)
+        {
+            waypointPosition.y += height - (5000 - hit.distance);
+        }
+        // New waypoint is outside of the map
+        else
+        {
+            waypointPosition.y = height;
+        }
+
+        return waypointPosition;
+    }
+
+    protected void ChangeWaypoint()
     {
         if (waypointQueue.Count == 0)
         {
-            CreateWaypoint();
+            currentWaypoint = CreateWaypoint();
         }
         else
         {
@@ -207,38 +250,62 @@ public class AircraftAI : MonoBehaviour
     {
         transform.Translate(new Vector3(0, 0, speed) * Time.deltaTime);
     }
-
-
-    void Start()
+    void JetEngineControl()
     {
-        speed = targetSpeed = defaultSpeed;
-        accelerateReciprocal = 1 / accelerateAmount;
-
-        currentTurningForce = turningForce;
-        turningTime = 1 / turningForce;
-        currentTurningTime = turningTime;
-
-        waypointQueue = new Queue<Transform>();
-        foreach (Transform t in initialWaypoints)
+        foreach (JetEngineController jet in jetEngineControllers)
         {
-            waypointQueue.Enqueue(t);
+            jet.InputValue = currentAccelerate * accelerateReciprocal;
         }
-        for (int i = 0; i < 50; i++)
+    }
+    public override void OnWarning()
+    {
+        float rate = Random.Range(0.0f, 1.0f);
+        if (rate <= evasionRate)
         {
-            CreateWaypoint();
+            ChangeWaypoint();
+            Debug.Log("Evaded");
         }
-        ChangeWaypoint();
+        else
+        {
+            Debug.Log("Not Evaded");
+        }
     }
 
-    void Update()
+
+    protected override void Start()
     {
-        CheckWaypoint();
-        ZAxisRotate();
-        Rotate();
+        base.Start();
+        {
+            speed = targetSpeed = defaultSpeed;
 
-        AdjustSpeed();
-        Move();
+            accelerateReciprocal = 1 / accelerateAmount;
 
-        //currentTurningTime = Mathf.Lerp(currentTurningTime, turningTime, 1);
+            currentTurningForce = turningForce;
+            currentTurningTime = turningTime = 1 / turningForce;
+
+            waypointQueue = new Queue<Transform>();
+
+            if (initialWaypoints.Count > 0)
+            {
+                foreach (Transform t in initialWaypoints)
+                {
+                    waypointQueue.Enqueue(t);
+                }
+            }
+            ChangeWaypoint();
+        }
     }
-}
+
+    protected virtual void Update()
+    {
+            CheckWaypoint();
+            JetEngineControl();
+            ZAxisRotate();
+            Rotate();
+
+            AdjustSpeed();
+            Move();
+            CheckMissileDistance();
+            //currentTurningTime = Mathf.Lerp(currentTurningTime, turningTime, 1);
+        }
+    }
