@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public ObjectPools groundHitEffectObjectPool;
     public ObjectPools BigExplosionPool;
     public ObjectPools smokeTrailEffectObjectPool;
+    public ObjectPools borderIncicatorObjectPool;
 
     [Header("Controllers")]
     [SerializeField]

@@ -11,6 +11,30 @@ public class EnemyAircraft : AircraftAI
     [SerializeField]
     Transform smokeTransformParent;
 
+    [SerializeField]
+    [Range(0, 1)]
+    float playerTrackingRate = 0.5f;
+
+    [SerializeField]
+    float minimumPlayerDistance = 2000; // 플레이어와의 거리가 이 값보다 길면 무조건 플레이어를 추적
+
+    protected override Vector3 CreateWaypoint()
+    {
+        float rate = Random.Range(0.0f, 1.0f);
+        float distance = Vector3.Distance(transform.position, GameManager.PlayerAircraft.transform.position);
+
+        if (rate < playerTrackingRate)
+        {
+            Debug.Log("Tracking");
+            return GameManager.PlayerAircraft.transform.position;
+        }
+        else
+        {
+            Debug.Log("Not Tracking");
+            return base.CreateWaypoint();
+        }
+    }
+
     protected override void DestroyObject()
     {
         CommonDestroyFunction();

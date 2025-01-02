@@ -65,6 +65,10 @@ public class UIController : MonoBehaviour
     [SerializeField]
     HeadingUIController headingUIController;
 
+    [Header("Minimap Misc.")]
+    [SerializeField]
+    MinimapCamera minimapCamera;
+
     [Header("Materials")]
     [SerializeField]
     Material spriteMaterial;
@@ -81,6 +85,10 @@ public class UIController : MonoBehaviour
 
     int score = 0;
 
+    public MinimapCamera MinimapCamera
+    {
+        get { return minimapCamera; }
+    }
     public void SetSpeed(int speed)
     {
         string text = string.Format("<mspace=18>{0}</mspace>", speed);

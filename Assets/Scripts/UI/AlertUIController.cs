@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class AlertUIController : MonoBehaviour
 {
+    [Header("Timers")]
+    [SerializeField]
+    float warningBlinkTime = 0.7f;
+
     [Header("Warning/Alert Label Objects")]
     [SerializeField]
     RawImage labelImage;
@@ -23,6 +27,7 @@ public class AlertUIController : MonoBehaviour
 
     int currentPriority;
     float labelTimer;
+    PlayerAircraft.WarningStatus prevWarningStatus = PlayerAircraft.WarningStatus.NONE;
 
     public enum LabelEnum  // Used for Priority
     {
@@ -37,6 +42,9 @@ public class AlertUIController : MonoBehaviour
 
     [Header("Attack Alerts")]
     // Attack
+    [SerializeField]
+    GameObject alertParent;
+
     [SerializeField]
     GameObject caution;
     [SerializeField]
@@ -119,7 +127,56 @@ public class AlertUIController : MonoBehaviour
         if (GameManager.PlayerFighterController.IsStalling != stalling.activeInHierarchy)
             stalling.SetActive(GameManager.PlayerFighterController.IsStalling);
     }
+    void HideAllAttackAlertUI()
+    {
+        Transform alertTransform = alertParent.transform;
+        for (int i = 0; i < alertTransform.childCount; i++)
+        {
+            alertTransform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+    void BlinkAttackAlertUI()
+    {
+        alertParent.SetActive(!alertParent.activeInHierarchy);
+    }
 
+    void ShowAttackAlertUI()
+    {
+        PlayerAircraft.WarningStatus warningStatus = GameManager.PlayerAircraft.GetWarningStatus();
+        if (prevWarningStatus == warningStatus) return;
+
+        prevWarningStatus = warningStatus;
+        CancelInvoke("BlinkAttackAlertUI");
+        HideAllAttackAlertUI();
+        alertParent.SetActive(false);
+
+        // Missile alert
+        switch (warningStatus)
+        {
+            case PlayerAircraft.WarningStatus.MISSILE_ALERT_EMERGENCY:
+                missileAlert.SetActive(true);
+                InvokeRepeating("BlinkAttackAlertUI", 0, warningBlinkTime);
+                GameManager.UIController.SetWarningUIColor(true);
+                break;
+
+            case PlayerAircraft.WarningStatus.MISSILE_ALERT:
+                missileAlert.SetActive(true);
+                InvokeRepeating("BlinkAttackAlertUI", 0, warningBlinkTime);
+                GameManager.UIController.SetWarningUIColor(true);
+                break;
+
+            case PlayerAircraft.WarningStatus.WARNING:
+                warning.SetActive(true);
+                InvokeRepeating("BlinkAttackAlertUI", 0, warningBlinkTime);
+                GameManager.UIController.SetWarningUIColor(false);
+                break;
+
+            case PlayerAircraft.WarningStatus.NONE:
+                warning.SetActive(false);
+                GameManager.UIController.SetWarningUIColor(false);
+                break;
+        }
+    }
     void Start()
     {
         labelImage.color = transparentColor;
@@ -130,6 +187,7 @@ public class AlertUIController : MonoBehaviour
     {
         ShowAutopilotUI();
         ShowStallingUI();
+        ShowAttackAlertUI();
 
         if (labelTimer > 0)
         {

@@ -77,6 +77,10 @@ public class AircraftAI : TargetObject
     [SerializeField]
     GameObject waypointObject;
 
+    public float Speed
+    {
+        get { return speed; }
+    }
     public static Vector3 RandomPointInBounds(Bounds bounds)
     {
         return new Vector3(
@@ -88,9 +92,14 @@ public class AircraftAI : TargetObject
     protected virtual Vector3 CreateWaypoint()
     {
         if (areaCollider != null)
+        {
             return CreateWaypointWithinArea();
+        }
+
         else
+        {
             return CreateWaypointAroundItself();
+        }
     }
     void RandomizeSpeedAndTurn()
     {
@@ -257,17 +266,12 @@ public class AircraftAI : TargetObject
             jet.InputValue = currentAccelerate * accelerateReciprocal;
         }
     }
-    public override void OnWarning()
+    public override void OnMissileAlert()
     {
         float rate = Random.Range(0.0f, 1.0f);
         if (rate <= evasionRate)
         {
             ChangeWaypoint();
-            Debug.Log("Evaded");
-        }
-        else
-        {
-            Debug.Log("Not Evaded");
         }
     }
 

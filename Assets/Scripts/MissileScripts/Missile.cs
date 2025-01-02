@@ -37,8 +37,10 @@ public class Missile : MonoBehaviour
     public float cooldown;
     public int payload;
 
+    [Header("UI")]
     public Sprite missileFrameSprite;
     public Sprite missileFillSprite;
+    public MinimapSprite minimapSprite;
 
     GameObject smokeTrailEffect;
     public Transform smokeTrailPosition;
@@ -49,14 +51,26 @@ public class Missile : MonoBehaviour
 
     Rigidbody targetRigidbody = null;
 
+    public bool HasWarned
+    {
+        get { return hasWarned; }
+        set { hasWarned = value; }
+    }
+
+    public bool IsDisabled
+    {
+        get { return isDisabled; }
+    }
+
     public void Launch(TargetObject target, float launchSpeed, int layer)
     {
         this.target = target;
 
         targetRigidbody = target?.GetComponent<Rigidbody>();
-        // Send Message to object that it is locked on
+        minimapSprite.SetMinimapSpriteVisible(target != null);
         isDisabled = (target == null);
 
+        // Send Message to object that it is locked on
         target?.AddLockedMissile(this);
 
         speed = launchSpeed;
@@ -107,7 +121,10 @@ public class Missile : MonoBehaviour
 
         if (angle > boresightAngle)
         {
-            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
+            // UI
+            ShowMissedLabel();
+            minimapSprite.SetMinimapSpriteVisible(false);
+
             isDisabled = true;
             // Send Message to object that it is no more locked on
             target.GetComponent<TargetObject>()?.RemoveLockedMissile(this);
@@ -142,11 +159,6 @@ public class Missile : MonoBehaviour
     {
         target = null;
         DisableMissile();
-    }
-    public bool HasWarned
-    {
-        get { return hasWarned; }
-        set { hasWarned = value; }
     }
 
     void DisableMissile()

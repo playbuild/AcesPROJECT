@@ -17,7 +17,7 @@ public class TargetObject : MonoBehaviour
 
     int lastHitLayer;
 
-    List<Missile> lockedMissiles = new List<Missile>();
+    protected List<Missile> lockedMissiles = new List<Missile>();
     protected bool isWarning;
 
     protected MinimapSprite minimapSprite;
@@ -36,6 +36,13 @@ public class TargetObject : MonoBehaviour
         {
             return objectInfo;
         }
+    }
+
+    bool isLocking;
+    public bool IsLocking
+    {
+        get { return isLocking; }
+        set { isLocking = value; }
     }
     protected void DeleteMinimapSprite()
     {
@@ -83,20 +90,18 @@ public class TargetObject : MonoBehaviour
             GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
         }
     }
-    public void AddLockedMissile(Missile missile)
+    public virtual void OnMissileAlert()
+    {
+
+    }
+    public virtual void AddLockedMissile(Missile missile)
     {
         lockedMissiles.Add(missile);
-        Debug.Log("Missile Added");
     }
 
     public void RemoveLockedMissile(Missile missile)
     {
         lockedMissiles.Remove(missile);
-        Debug.Log("Missile Removed");
-    }
-    public virtual void OnWarning()
-    {
-
     }
 
     protected void CheckMissileDistance()
@@ -122,7 +127,7 @@ public class TargetObject : MonoBehaviour
 
         if (executeWarning)
         {
-            OnWarning();
+            OnMissileAlert();
         }
 
         if (existWarningMissile == true)
