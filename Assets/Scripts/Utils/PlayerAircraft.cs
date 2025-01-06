@@ -58,9 +58,12 @@ public class PlayerAircraft : TargetObject
     // Ground/Object Collision
     private void OnCollisionEnter(Collision other)
     {
+        Debug.Log("Layer Num" + other.gameObject.layer);
+        Debug.Log("Obj Name" + other.gameObject.name);
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
             other.gameObject.GetComponent<TargetObject>() != null)
         {
+
             DestroyObjectImmediate();
         }
     }

@@ -83,6 +83,14 @@ public class UIController : MonoBehaviour
     [SerializeField]
     Color warningColor;
 
+    [Header("Sounds")]
+    [SerializeField]
+    AudioClip spwChangeAudioClip;
+    [SerializeField]
+    AudioClip mslChangeAudioClip;
+
+    AudioSource audioSource;
+
     public float remainTime;
     int score = 0;
     bool isTimeLow = false;
@@ -127,7 +135,25 @@ public class UIController : MonoBehaviour
         string text = string.Format("<align=left>{0}<line-height=0>\n<align=right><mspace=18>{1}</mspace><line-height=0>", specialWeaponName, specialWeapons);
         spwText.text = text;
     }
-    public void SwitchWeapon(WeaponSlot[] weaponSlots, bool useSpecialWeapon, Missile missile)
+    public void SetDamage(int damage)
+    {
+        string text = string.Format("<align=left>DMG<line-height=0>\n<align=right>{0}%<line-height=0>", damage);
+        dmgText.text = text;
+
+        if (damage < 34)
+        {
+            aircraftImage.color = GameManager.NormalColor;
+        }
+        else if (damage < 67)
+        {
+            aircraftImage.color = cautionColor;
+        }
+        else
+        {
+            aircraftImage.color = GameManager.WarningColor;
+        }
+    }
+    public void SwitchWeapon(WeaponSlot[] weaponSlots, bool useSpecialWeapon, Missile missile, bool playAudio = true)
     {
         mslIndicator.SetActive(!useSpecialWeapon);
         spwIndicator.SetActive(useSpecialWeapon);
@@ -135,6 +161,12 @@ public class UIController : MonoBehaviour
         // Justify that weaponSlots contains 2 slots
         leftMslCooldownImage.SetWeaponData(weaponSlots[0], missile.missileFrameSprite, missile.missileFillSprite);
         rightMslCooldownImage.SetWeaponData(weaponSlots[1], missile.missileFrameSprite, missile.missileFillSprite);
+
+        if (playAudio == true)
+        {
+            AudioClip audioClip = (useSpecialWeapon == true) ? spwChangeAudioClip : mslChangeAudioClip;
+            audioSource.PlayOneShot(audioClip);
+        }
     }
     public void SwitchUI(CameraController.CameraIndex index)
     {
@@ -159,13 +191,6 @@ public class UIController : MonoBehaviour
         Color color = (isWarning == true) ? warningColor : normalColor;
         spriteMaterial.color = color;
         fontMaterial.SetColor("_FaceColor", color);
-    }
-
-    void Start()
-    {
-        firstViewAdjustAngle = new Vector2(1 / firstViewAdjustAngle.x, 1 / firstViewAdjustAngle.y);
-
-        //SetWarningUIColor(true); // TEST
     }
     public void AdjustFirstViewUI(Vector3 cameraRotation)
     {
@@ -219,27 +244,19 @@ public class UIController : MonoBehaviour
             targetText.text = text;
         }
     }
-    public void SetDamage(int damage)
-    {
-        string text = string.Format("<align=left>DMG<line-height=0>\n<align=right>{0}%<line-height=0>", damage);
-        dmgText.text = text;
-
-        if (damage < 34)
-        {
-            aircraftImage.color = GameManager.NormalColor;
-        }
-        else if (damage < 67)
-        {
-            aircraftImage.color = cautionColor;
-        }
-        else
-        {
-            aircraftImage.color = GameManager.WarningColor;
-        }
-    }
     public void SetLabel(AlertUIController.LabelEnum labelEnum)
     {
         alertUIController.SetLabel(labelEnum);
+    }
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+    void Start()
+    {
+        firstViewAdjustAngle = new Vector2(1 / firstViewAdjustAngle.x, 1 / firstViewAdjustAngle.y);
+
+        //SetWarningUIColor(true); // TEST
     }
     void Update()
     {

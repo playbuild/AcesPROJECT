@@ -54,6 +54,14 @@ public class WeaponController : MonoBehaviour
     [SerializeField]
     GunCrosshair gunCrosshair;
 
+    [Header("Sounds")]
+    [SerializeField]
+    AudioClip ammunationZeroClip;
+    [SerializeField]
+    AudioClip cooldownClip;
+
+    AudioSource audioSource;
+
     // Weapon Callbacks
     public void Fire(InputAction.CallbackContext context)
     {
@@ -94,14 +102,19 @@ public class WeaponController : MonoBehaviour
     {
         WeaponSlot availableWeaponSlot = GetAvailableWeaponSlot(ref weaponSlots);
 
+        //Ammunition Zero
         if (missileCnt <= 0)
         {
-            //Ammunition Zero
+            if (audioSource.isPlaying == false)
+            {
+                audioSource.PlayOneShot(ammunationZeroClip);
+            }
             return;
         }
-        if (leftMslCooldown > 0 && rightMslCooldown > 0)
+        // Not available : Beep sound
+        if (availableWeaponSlot == null)
         {
-            // Beep sound
+            audioSource.PlayOneShot(cooldownClip);
             return;
         }
 
@@ -297,6 +310,8 @@ public class WeaponController : MonoBehaviour
 
         missilePool.poolObject = missile.gameObject;
         specialWeaponPool.poolObject = specialWeapon.gameObject;
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     void SetArmament()

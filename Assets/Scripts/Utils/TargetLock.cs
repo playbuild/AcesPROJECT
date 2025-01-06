@@ -5,6 +5,15 @@ using UnityEngine.UI;
 
 public class TargetLock : FollowTransformUI
 {
+    enum LockStatus
+    {
+        NONE,
+        LOCKING,
+        LOCKED
+    }
+
+    LockStatus lockStatus;
+
     RawImage rawImage;
 
     [SerializeField]
@@ -24,6 +33,14 @@ public class TargetLock : FollowTransformUI
     float lockProgress;
     bool isLocked;
 
+    [Header("Sounds")]
+    [SerializeField]
+    AudioClip lockingClip;
+    [SerializeField]
+    AudioClip lockedClip;
+
+    AudioSource audioSource;
+
     public bool IsLocked
     {
         get { return isLocked; }
@@ -35,6 +52,8 @@ public class TargetLock : FollowTransformUI
     // Set image invisible
     void ResetLock()
     {
+        SetLockAudio(LockStatus.NONE);
+
         isLocked = false;
         lockProgress = 0;
         rawImage.color = GameManager.NormalColor;
@@ -120,6 +139,8 @@ public class TargetLock : FollowTransformUI
             // Locked!
             if (lockProgress >= targetAngle)
             {
+                SetLockAudio(LockStatus.LOCKED);
+
                 isLocked = true;
                 lockProgress = boresightAngle;
                 rawImage.color = GameManager.WarningColor;
@@ -129,6 +150,7 @@ public class TargetLock : FollowTransformUI
             // Still Locking...
             else
             {
+                SetLockAudio(LockStatus.LOCKING);
                 isLocked = false;
                 rawImage.color = GameManager.NormalColor;
             }
@@ -136,10 +158,32 @@ public class TargetLock : FollowTransformUI
             rectTransform.anchoredPosition = Vector2.Lerp(crosshair.anchoredPosition, targetScreenPosition, lockProgress / targetAngle);
         }
     }
+    void SetLockAudio(LockStatus newStatus)
+    {
+        if (lockStatus == newStatus) return;
+        lockStatus = newStatus;
 
+        switch (lockStatus)
+        {
+            case LockStatus.NONE:
+                audioSource.Stop();
+                break;
+
+            case LockStatus.LOCKING:
+                audioSource.clip = lockingClip;
+                audioSource.Play();
+                break;
+
+            case LockStatus.LOCKED:
+                audioSource.clip = lockedClip;
+                audioSource.Play();
+                break;
+        }
+    }
     void Awake()
     {
         rawImage = GetComponent<RawImage>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Start is called before the first frame update

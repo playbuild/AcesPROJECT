@@ -282,7 +282,7 @@ MonoBehaviour:
   lockDistance: 1500
   explosionPrefab: {fileID: 198917022394846920, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
   cooldown: 4
-  payload: 120
+  payload: 4
   missileFrameSprite: {fileID: 21300000, guid: a4e9c0714cedb314e987e7e3d9a6cdb7, type: 3}
   missileFillSprite: {fileID: 21300000, guid: 3d269c4c088034543b462a85732f4b73, type: 3}
   minimapSprite: {fileID: 799554316148745076}
