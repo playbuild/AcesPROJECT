@@ -222,6 +222,7 @@ public class PlayerFighterController : MonoBehaviour
 
         // High-G Turn
         CheckHighGTurn(ref accel, ref brake, ref highGPitchFactor);
+
         // === Rotation ===
         Vector3 rotateVector;
         if (speed < stallSpeed)
@@ -246,10 +247,11 @@ public class PlayerFighterController : MonoBehaviour
                 isAutoPilot = false;
                 rotateVector = new Vector3(pitchValue * pitchAmount * highGPitchFactor, (yawEValue - yawQValue) * yawAmount, -rollValue * rollAmount);
             }
-            rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.deltaTime);
+            rotateValue = Vector3.Lerp(rotateValue, rotateVector, rotateLerpAmount * Time.fixedDeltaTime);
         }
 
         rb.MoveRotation(rb.rotation * Quaternion.Euler(rotateValue * Time.fixedDeltaTime));
+
         //비행기 전진
         throttle = Mathf.Lerp(throttle, accelerateValue - brakeValue, throttleAmount * Time.deltaTime);
 
@@ -267,11 +269,11 @@ public class PlayerFighterController : MonoBehaviour
         }
         //기본 속도로 복구
         float release = 1 - Mathf.Abs(throttle);
-        speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.deltaTime;
+        speed += release * (defaultSpeed - speed) * speedReciprocal * calibrateAmount * Time.fixedDeltaTime;
 
         // Gravity
         float gravityFallByPitch = gravityFactor * Mathf.Sin(transform.eulerAngles.x * Mathf.Deg2Rad);
-        speed += gravityFallByPitch * Time.deltaTime;
+        speed += gravityFallByPitch * Time.fixedDeltaTime;
 
         rb.velocity = transform.forward * speed;
     }
@@ -282,6 +284,10 @@ public class PlayerFighterController : MonoBehaviour
         {
             jet.InputValue = throttle;
         }
+    }
+    public void DisableControl()
+    {
+        GetComponent<PlayerInput>().enabled = false;
     }
 
     void Start()

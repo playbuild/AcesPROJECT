@@ -83,8 +83,17 @@ public class UIController : MonoBehaviour
     [SerializeField]
     Color warningColor;
 
+    public float remainTime;
     int score = 0;
+    bool isTimeLow = false;
+    bool isRedTimerActive = false;
 
+    float elapsedTime = 0;
+
+    public bool IsRedTimerActive
+    {
+        set { isRedTimerActive = value; }
+    }
     public MinimapCamera MinimapCamera
     {
         get { return minimapCamera; }
@@ -168,6 +177,28 @@ public class UIController : MonoBehaviour
 
         firstCenterViewTransform.anchoredPosition = convertedRotation * canvasResolution;
     }
+    public void SetRemainTime(int remainTime)
+    {
+        this.remainTime = (float)remainTime;
+    }
+    void SetTime()
+    {
+        remainTime -= Time.deltaTime;
+        if (remainTime <= 0)
+        {
+            CancelInvoke();
+            GameManager.Instance.GameOver(false);
+            remainTime = 0;
+        }
+
+        int seconds = (int)remainTime;
+
+        int min = seconds / 60;
+        int sec = seconds % 60;
+        int millisec = (int)((remainTime - seconds) * 100);
+        string text = string.Format("TIME <mspace=18>{0:00}</mspace>:<mspace=18>{1:00}</mspace>:<mspace=18>{2:00}</mspace>", min, sec, millisec);
+        timeText.text = text;
+    }
     public void SetScoreText(int score)
     {
         this.score += score;
@@ -212,6 +243,6 @@ public class UIController : MonoBehaviour
     }
     void Update()
     {
-        
+        SetTime();
     }
 }

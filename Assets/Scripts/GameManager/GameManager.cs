@@ -34,6 +34,18 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TargetController targetController;
 
+    [Header("Game Over Control")]
+
+    bool isGameOver = false;
+
+    [SerializeField]
+    List<GameObject> disableOnGameOverObjects;
+    [SerializeField]
+    List<GameObject> enableOnGameOverObjects;
+
+    [SerializeField]
+    DeathCam deathCam;
+
     List<TargetObject> objects = new List<TargetObject>();
 
     [SerializeField]
@@ -150,6 +162,33 @@ public class GameManager : MonoBehaviour
         {
             smokeTrailObject.SetActive(true);
             smokeTrailObject.GetComponent<SmokeTrail>()?.SetFollowTransform(transform);
+        }
+    }
+    public void GameOver(bool isDead, bool isInstantDeath = false)
+    {
+        UIController.SetLabel(AlertUIController.LabelEnum.MissionFailed);
+
+        foreach (TargetObject obj in objects)
+        {
+            obj.DeleteMinimapSprite();
+        }
+        targetController.RemoveAllTargetUI();
+        objects.Clear();
+        weaponController.ChangeTarget();
+
+        if (isDead)
+        {
+            foreach (GameObject obj in disableOnGameOverObjects)
+            {
+                obj.SetActive(false);
+            }
+            foreach (GameObject obj in enableOnGameOverObjects)
+            {
+                obj.SetActive(true);
+            }
+            deathCam.PlayAnimation(isInstantDeath);
+
+            PlayerFighterController.DisableControl();
         }
     }
     void Awake()

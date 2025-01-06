@@ -13,14 +13,14 @@ TagManager:
   - Water
   - UI
   - Aircraft
-  - Player
-  - Enemy
-  - Minimap
-  - Minimap(player)
+  - 
+  - Lighting
   - Ground
+  - Postprocessing
+  - Player
   - Object
-  - 
-  - 
+  - Minimap
+  - Minimap (Player)
   - 
   - 
   - 

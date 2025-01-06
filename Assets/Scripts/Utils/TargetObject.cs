@@ -21,6 +21,7 @@ public class TargetObject : MonoBehaviour
     protected bool isWarning;
 
     protected MinimapSprite minimapSprite;
+    protected bool isDestroyed;
 
     protected TargetUI targetUI;
 
@@ -44,7 +45,7 @@ public class TargetObject : MonoBehaviour
         get { return isLocking; }
         set { isLocking = value; }
     }
-    protected void DeleteMinimapSprite()
+    public void DeleteMinimapSprite()
     {
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -64,6 +65,8 @@ public class TargetObject : MonoBehaviour
     }
     protected void CommonDestroyFunction()
     {
+        isDestroyed = true;
+
         GameObject obj = Instantiate(destroyEffect, transform.position, Quaternion.identity);
         if (isEnemy == true)
         {
@@ -71,7 +74,11 @@ public class TargetObject : MonoBehaviour
             GameManager.TargetController?.RemoveTargetUI(this);
             GameManager.WeaponController?.ChangeTarget();
 
-            GameManager.PlayerAircraft.OnScore(objectInfo.Score);
+            if (lastHitLayer == LayerMask.NameToLayer("Player"))
+            {
+                GameManager.PlayerAircraft.OnScore(objectInfo.Score);
+                GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
+            }
         }
     }
     public virtual void OnDamage(float damage, int layer)

@@ -20,7 +20,19 @@ public class PlayerAircraft : TargetObject
     MissileIndicatorController missileIndicatorController;
 
     [SerializeField]
+    float destroyDelay = 1;
+
+    [SerializeField]
     float rotateSpeedOnDestroy = 600;
+
+    [SerializeField]
+    Transform smokeTransformParent;
+
+    [SerializeField]
+    List<TrailRenderer> contrails;
+
+    [SerializeField]
+    GameObject aircraftModel;
 
     int score = 0;
     UIController uiController;
@@ -34,15 +46,75 @@ public class PlayerAircraft : TargetObject
         base.AddLockedMissile(missile);
         missileIndicatorController.AddMissileIndicator(missile);
     }
+    public void DisableAllMissiles()
+    {
+        foreach (Missile lockedMissile in lockedMissiles)
+        {
+            lockedMissile.RemoveTarget();
+        }
+        lockedMissiles.Clear();
+    }
+
+    // Ground/Object Collision
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
+            other.gameObject.GetComponent<TargetObject>() != null)
+        {
+            DestroyObjectImmediate();
+        }
+    }
     public override void OnDamage(float damage, int layer)
     {
         base.OnDamage(damage, layer);
         uiController.SetDamage((int)(Info.HP - hp / Info.HP * 100));
+
+        for (int i = 0; i < smokeTransformParent.childCount; i++)
+        {
+            GameManager.Instance.CreateDamageSmokeEffect(smokeTransformParent.GetChild(i));
+        }
     }
     public void OnScore(int score)
     {
         this.score += score;
         uiController.SetScoreText(this.score);
+    }
+    protected override void DestroyObject()
+    {
+        CommonDestroyFunction();
+        GameManager.Instance.GameOver(true, false);
+        Invoke("DelayedDestroy", destroyDelay);
+    }
+    void DestroyObjectImmediate()
+    {
+        CancelInvoke();
+        CommonDestroyFunction();
+        GameManager.Instance.GameOver(true, true);
+
+        DelayedDestroy();
+    }
+
+    void DelayedDestroy()
+    {
+        GameObject obj = Instantiate(destroyEffect, transform.position, Quaternion.identity);
+        Destroy(aircraftModel);
+
+        Collider[] colliders = GetComponents<Collider>();
+        foreach (Collider col in colliders)
+        {
+            col.enabled = false;
+        }
+
+        GetComponent<PlayerFighterController>().enabled = false;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
+    public void SelfDestruct()
+    {
+        DestroyObject();
     }
     public WarningStatus GetWarningStatus()
     {
@@ -81,5 +153,9 @@ public class PlayerAircraft : TargetObject
     }
     void Update()
     {
+        if (isDestroyed == true)
+        {
+            transform.Rotate(0, 0, rotateSpeedOnDestroy * Time.deltaTime);
+        }
     }
 }
