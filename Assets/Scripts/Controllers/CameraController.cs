@@ -13,17 +13,21 @@ public class CameraController : MonoBehaviour
         FirstViewWithCockpit,
     }
 
-    [Header("Camera Lerp")]
-    public float lerpAmount;
+    Vector2 lookInputValue;
+    Vector2 lookValue;
+    Vector3 thirdPivotOriginPosition;
 
     [Header("Camera Objects")]
     public Camera[] cameras = new Camera[3];
-
-    Vector2 lookInputValue;
-    Vector2 lookValue;
-
     public Transform cameraPivot;
     public Transform thirdViewCameraPivot;
+
+    Camera currentCamera;
+
+    int cameraViewIndex = 0;
+
+    [Header("Camera Lerp")]
+    public float lerpAmount;
 
     float zoomValue;
     public float zoomLerpAmount;
@@ -39,14 +43,20 @@ public class CameraController : MonoBehaviour
 
     Transform lockOnTargetTransform;
 
+    [SerializeField]
+    JetEngineController jetEngineController;
+
+    [Header("Sounds")]
+    [SerializeField]
+    AudioClip engineInClip;
+    [SerializeField]
+    AudioClip engineOutClip;
+
+    [SerializeField]
+    AudioSource engineAudioSource;
+
     UIController uiController;
     public Transform targetArrowTransform;
-
-    Camera currentCamera;
-
-    int cameraViewIndex = 0;
-
-    Vector3 thirdPivotOriginPosition;
 
     public void Look(InputAction.CallbackContext context)
     {
@@ -57,8 +67,10 @@ public class CameraController : MonoBehaviour
     {
         if (context.action.phase == InputActionPhase.Performed)
         {
+            lookValue = Vector3.zero;
             cameraViewIndex = (++cameraViewIndex) % 3;
             SetCamera();
+            SetEngineAudio();
         }
     }
 
@@ -74,12 +86,6 @@ public class CameraController : MonoBehaviour
         }
         targetArrowTransform.SetParent(currentCamera.transform, false);
         uiController.SwitchUI((CameraIndex)cameraViewIndex);
-    }
-    void Start()
-    {
-        uiController = GameManager.UIController;
-        SetCamera();
-        thirdPivotOriginPosition = thirdViewCameraPivot.localPosition;
     }
 
     //카메라 역동적 조절
@@ -181,7 +187,33 @@ public class CameraController : MonoBehaviour
         rotateVector.z = 0; // z value must be 0
         return Quaternion.Euler(rotateVector); // Recalculate
     }
-    void Update()
+    void SetEngineAudio()
+    {
+        switch ((CameraIndex)cameraViewIndex)
+        {
+            case CameraIndex.FirstView:
+                engineAudioSource.clip = engineInClip;
+                engineAudioSource.Play();
+                jetEngineController.SetAudioEffect(true);
+                break;
+
+            case CameraIndex.ThirdView:
+                engineAudioSource.clip = engineOutClip;
+                engineAudioSource.Play();
+                jetEngineController.SetAudioEffect(false);
+                break;
+
+            default:
+                break;
+        }
+    }
+    void Start()
+    {
+        thirdPivotOriginPosition = thirdViewCameraPivot.localPosition;
+        uiController = GameManager.UIController;
+        SetCamera();
+    }
+    void FixedUpdate()
     {
         lookValue = Vector2.Lerp(lookValue, lookInputValue, lerpAmount * Time.deltaTime);
 

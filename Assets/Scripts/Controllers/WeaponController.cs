@@ -10,12 +10,8 @@ public class WeaponController : MonoBehaviour
 {
     // Weapon Inputs
     bool useSpecialWeapon;
-    bool isGunFiring;
 
     TargetObject target;
-
-    PlayerFighterController fighterController;
-    UIController uiController;
 
     ObjectPools missilePool;
     int missileCnt;
@@ -60,7 +56,18 @@ public class WeaponController : MonoBehaviour
     [SerializeField]
     AudioClip cooldownClip;
 
-    AudioSource audioSource;
+    [SerializeField]
+    AudioSource voiceAudioSource;
+    [SerializeField]
+    AudioSource weaponAudioSource;
+    [SerializeField]
+    AudioSource missileAudioSource;
+
+    [SerializeField]
+    GunAudio gunAudio;
+
+    PlayerFighterController fighterController;
+    UIController uiController;
 
     // Weapon Callbacks
     public void Fire(InputAction.CallbackContext context)
@@ -105,16 +112,16 @@ public class WeaponController : MonoBehaviour
         //Ammunition Zero
         if (missileCnt <= 0)
         {
-            if (audioSource.isPlaying == false)
+            if (voiceAudioSource.isPlaying == false)
             {
-                audioSource.PlayOneShot(ammunationZeroClip);
+                voiceAudioSource.PlayOneShot(ammunationZeroClip);
             }
             return;
         }
         // Not available : Beep sound
         if (availableWeaponSlot == null)
         {
-            audioSource.PlayOneShot(cooldownClip);
+            weaponAudioSource.PlayOneShot(cooldownClip);
             return;
         }
 
@@ -148,6 +155,8 @@ public class WeaponController : MonoBehaviour
 
         uiController.SetMissileText(missileCnt);
         uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
+
+        weaponAudioSource.PlayOneShot(SoundManager.Instance.GetMissileLaunchClip());
     }
     void MissileCooldown(ref float cooldown)
     {
@@ -163,13 +172,13 @@ public class WeaponController : MonoBehaviour
         switch (context.action.phase)
         {
             case InputActionPhase.Performed:
-                isGunFiring = true;
                 InvokeRepeating("FireMachineGun", 0, fireInterval);
+                gunAudio.IsFiring = true;
                 break;
 
             case InputActionPhase.Canceled:
-                isGunFiring = false;
                 CancelInvoke("FireMachineGun");
+                gunAudio.IsFiring = false;
                 break;
         }
     }
@@ -300,20 +309,6 @@ public class WeaponController : MonoBehaviour
         uiController.SwitchWeapon(weaponSlots, useSpecialWeapon, switchedMissile);
         GameManager.TargetController.SwitchWeapon(switchedMissile);
     }
-
-
-    public void Awake()
-    {
-        missilePool = GameManager.Instance.missileObjectPool;
-        specialWeaponPool = GameManager.Instance.specialWeaponObjectPool;
-        bulletPool = GameManager.Instance.bulletObjectPool;
-
-        missilePool.poolObject = missile.gameObject;
-        specialWeaponPool.poolObject = specialWeapon.gameObject;
-
-        audioSource = GetComponent<AudioSource>();
-    }
-
     void SetArmament()
     {
         // Guns
@@ -336,6 +331,15 @@ public class WeaponController : MonoBehaviour
         {
             spwSlots[i] = new WeaponSlot(spwCooldownTime);
         }
+    }
+    public void Awake()
+    {
+        missilePool = GameManager.Instance.missileObjectPool;
+        specialWeaponPool = GameManager.Instance.specialWeaponObjectPool;
+        bulletPool = GameManager.Instance.bulletObjectPool;
+
+        missilePool.poolObject = missile.gameObject;
+        specialWeaponPool.poolObject = specialWeapon.gameObject;
     }
     void Start()
     {

@@ -56,6 +56,14 @@ public class TargetObject : MonoBehaviour
             }
         }
     }
+    public void SetMinimapSpriteVisible(bool visible)
+    {
+        if (minimapSprite != null)
+        {
+            minimapSprite.gameObject.SetActive(visible);
+            SetMinimapSpriteBlink(false);
+        }
+    }
     public void SetMinimapSpriteBlink(bool blink)
     {
         if (minimapSprite != null)

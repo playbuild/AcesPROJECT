@@ -34112,6 +34112,7 @@ GameObject:
   - component: {fileID: 1156127726525756103}
   - component: {fileID: 1156561908852682325}
   - component: {fileID: 1118181316181314873}
+  - component: {fileID: -2445644597153720164}
   - component: {fileID: 516912244597134247}
   m_Layer: 0
   m_Name: AircraftExplosion
@@ -39056,6 +39057,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 0
+--- !u!114 &-2445644597153720164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556574608389113247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f01a52edeb022894a853ae1ab2878b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!82 &516912244597134247
 AudioSource:
   m_ObjectHideFlags: 0

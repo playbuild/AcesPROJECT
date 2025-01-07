@@ -123,7 +123,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Self-Destruction[Debug]",
+                    "name": "EnemyActivate[Debug]",
                     "type": "Button",
                     "id": "8061a19d-3cbe-451c-a602-9c13ef22eb15",
                     "expectedControlType": "",
@@ -349,7 +349,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Self-Destruction[Debug]",
+                    "action": "EnemyActivate[Debug]",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -58,8 +58,6 @@ public class PlayerAircraft : TargetObject
     // Ground/Object Collision
     private void OnCollisionEnter(Collision other)
     {
-        Debug.Log("Layer Num" + other.gameObject.layer);
-        Debug.Log("Obj Name" + other.gameObject.name);
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
             other.gameObject.GetComponent<TargetObject>() != null)
         {
@@ -113,11 +111,6 @@ public class PlayerAircraft : TargetObject
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-    }
-
-    public void SelfDestruct()
-    {
-        DestroyObject();
     }
     public WarningStatus GetWarningStatus()
     {

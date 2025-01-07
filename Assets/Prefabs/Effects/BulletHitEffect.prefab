@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3961777155065236002}
   - component: {fileID: 946292904742659445}
   - component: {fileID: 8609677193160961532}
+  - component: {fileID: -1725785920227041893}
   m_Layer: 0
   m_Name: BulletHitEffect
   m_TagString: Untagged
@@ -4710,4 +4711,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d795f13166e1324d885a9cef8ab7f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 1
+  duration: 2
+--- !u!114 &-1725785920227041893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8934914647020654505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a04f85e84cc1cb846ba64c151fbe6492, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
