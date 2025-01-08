@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public ObjectPools BigExplosionPool;
     public ObjectPools smokeTrailEffectObjectPool;
     public ObjectPools borderIncicatorObjectPool;
+    public ObjectPools mpbmEffectObjectPool;
 
     [Header("Controllers")]
     [SerializeField]
@@ -86,6 +87,10 @@ public class GameManager : MonoBehaviour
     public static TargetController TargetController
     {
         get { return Instance?.targetController; }
+    }
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
     }
     public static GameManager Instance
     {

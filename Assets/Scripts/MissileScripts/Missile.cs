@@ -160,6 +160,25 @@ public class Missile : MonoBehaviour
         target = null;
         DisableMissile();
     }
+    // Called by ECM System
+    public void EvadeByECM(Vector3 randomPosition)
+    {
+        if (target != null)
+        {
+            target.RemoveLockedMissile(this);
+
+            if (isDisabled == false && isHit == false)
+            {
+                ShowMissedLabel();
+            }
+        }
+
+        target = null;
+
+        Vector3 randomDirection = randomPosition - transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(randomDirection);
+        rb.rotation = lookRotation;
+    }
 
     void DisableMissile()
     {

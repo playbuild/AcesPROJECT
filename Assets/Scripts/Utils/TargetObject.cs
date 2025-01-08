@@ -38,6 +38,10 @@ public class TargetObject : MonoBehaviour
             return objectInfo;
         }
     }
+    public List<Missile> LockedMissiles
+    {
+        get { return lockedMissiles; }
+    }
 
     bool isLocking;
     public bool IsLocking
@@ -89,7 +93,7 @@ public class TargetObject : MonoBehaviour
             }
         }
     }
-    public virtual void OnDamage(float damage, int layer)
+    public virtual void OnDamage(float damage, int layer, string tag = "")
     {
         hp -= damage;
         lastHitLayer = layer;

@@ -65,7 +65,7 @@ public class PlayerAircraft : TargetObject
             DestroyObjectImmediate();
         }
     }
-    public override void OnDamage(float damage, int layer)
+    public override void OnDamage(float damage, int layer, string tag = "")
     {
         base.OnDamage(damage, layer);
         uiController.SetDamage((int)(Info.HP - hp / Info.HP * 100));

@@ -46,7 +46,7 @@ public class EnemyAircraft : AircraftAI
         Destroy(gameObject);
     }
 
-    public override void OnDamage(float damage, int layer)
+    public override void OnDamage(float damage, int layer, string tag = "")
     {
         base.OnDamage(damage, layer);
 
