@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
 
+    [SerializeField]
+    PlayerInput playerInput;
+
     [Header("Object Pools")]
     public ObjectPools smokeTrailDamagePool;
     public ObjectPools bulletObjectPool;
@@ -35,7 +38,31 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TargetController targetController;
 
+    [Header("Pause Control")]
+    bool isPaused = false;
+
+    [SerializeField]
+    FadeController fadeController;
+
+    [SerializeField]
+    PauseController pauseController;
+
+    [SerializeField]
+    List<GameObject> hideOnPause;
+    [SerializeField]
+    GameObject pauseUICanvas;
+
     [Header("Game Over Control")]
+    [SerializeField]
+    GameObject gameOverUICanvas;
+    [SerializeField]
+    AudioSource gameOverAudioSource;
+
+    [SerializeField]
+    PauseController gameOverController;
+
+    [SerializeField]
+    List<GameObject> disableOnShowGameOverUI;
 
     bool isGameOver = false;
 
@@ -88,9 +115,17 @@ public class GameManager : MonoBehaviour
     {
         get { return Instance?.targetController; }
     }
+    public static PlayerInput PlayerInput
+    {
+        get { return Instance?.playerInput; }
+    }
     public bool IsGameOver
     {
         get { return isGameOver; }
+    }
+    public bool IsPaused
+    {
+        get { return isPaused; }
     }
     public static GameManager Instance
     {
@@ -171,6 +206,8 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver(bool isDead, bool isInstantDeath = false)
     {
+        float gameOverFadeOutDelay = 3.0f;
+
         UIController.SetLabel(AlertUIController.LabelEnum.MissionFailed);
 
         foreach (TargetObject obj in objects)
@@ -191,10 +228,109 @@ public class GameManager : MonoBehaviour
             {
                 obj.SetActive(true);
             }
+
+            playerInput.enabled = false;
             deathCam.PlayAnimation(isInstantDeath);
 
-            PlayerFighterController.DisableControl();
+            gameOverFadeOutDelay = 7.0f;
+
+            if (isGameOver == false)
+            {
+                gameOverAudioSource.Play();
+            }
         }
+        isGameOver = true;
+
+        Invoke("GameOverFadeOut", gameOverFadeOutDelay);
+    }
+    // Show/Hide Pause UI Canvas, Hide/Show other UIs, Set TimeScale
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.action.phase == InputActionPhase.Performed)
+        {
+            if (isGameOver == true) return;
+            Pause();
+        }
+    }
+    public void Pause()
+    {
+        Time.timeScale = (isPaused == true) ? 1 : 0;
+        isPaused = (Time.timeScale == 0);
+        uiController.MinimapCamera.SetPauseMinimapCamera(isPaused);
+
+        foreach (GameObject obj in hideOnPause)
+        {
+            obj.SetActive(!isPaused);
+        }
+        pauseUICanvas.SetActive(isPaused);
+
+        AudioListener.pause = isPaused;
+
+        string actionMapName = (isPaused == true) ? "UI" : "FighterAction";
+        playerInput.SwitchCurrentActionMap(actionMapName);
+        pauseController.enabled = isPaused;
+    }
+    public void RestartFromCheckpoint()
+    {
+        pauseController.enabled = false;
+        gameOverController.enabled = false;
+
+        fadeController.OnFadeOutComplete.AddListener(RestartFromCheckpointEvent);
+        fadeController.FadeOut();
+    }
+
+    void RestartFromCheckpointEvent()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void RestartMission()
+    {
+        fadeController.OnFadeOutComplete.AddListener(RestartMissionEvent);
+        fadeController.FadeOut();
+    }
+
+    void RestartMissionEvent()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void QuitMission()
+    {
+        fadeController.OnFadeOutComplete.AddListener(QuitMissionEvent);
+        fadeController.FadeOut();
+    }
+
+    void QuitMissionEvent()
+    {
+        Application.Quit();
+    }
+    void GameOverFadeOut()
+    {
+        CancelInvoke();
+
+        fadeController.OnFadeOutComplete.AddListener(ShowGameOverUI);
+        fadeController.FadeOut(true);
+    }
+    void ShowGameOverUI()
+    {
+        Time.timeScale = 0;
+        AudioListener.pause = true;
+        EnablePlayerInput(false);
+        gameOverUICanvas.SetActive(true);
+
+        foreach (GameObject obj in disableOnShowGameOverUI)
+        {
+            obj.SetActive(false);
+        }
+    }
+    public void EnablePlayerInput(bool usePlayerActionMap = true)
+    {
+        playerInput.enabled = true;
+        playerInput.actions.Disable();
+
+        string actionMapName = (usePlayerActionMap == true) ? "FighterAction" : "UI";
+        playerInput.SwitchCurrentActionMap(actionMapName);
     }
     void Awake()
     {

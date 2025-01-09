@@ -4,8 +4,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerFighterController : MonoBehaviour
 {
-    CameraController cameraController;
-    UIController uiController;
 
     float accelerateValue; // 컨트롤러로 얻어오는 값
     float brakeValue;
@@ -62,26 +60,15 @@ public class PlayerFighterController : MonoBehaviour
     Rigidbody rb;
     float speedReciprocal; // maxSpeed의 역수
 
+    CameraController cameraController;
+    UIController uiController;
+
     // public gets
     public float Speed
     {
-        get
-        {
-            return speed;
-        }
+        get { return speed; }
     }
 
-    bool isAutoPilot;
-    public bool IsAutoPilot
-    {
-        get { return isAutoPilot; }
-    }
-
-    bool isStalling;
-    public bool IsStalling
-    {
-        get { return isStalling; }
-    }
     public bool IsHighGTurning
     {
         get { return isHighGTurning; }
@@ -90,11 +77,15 @@ public class PlayerFighterController : MonoBehaviour
     {
         get { return rotateValue; }
     }
-
-    void FixedUpdate()
+    bool isAutoPilot;
+    public bool IsAutoPilot
     {
-        MoveAircraft();
-        PassCameraControl();
+        get { return isAutoPilot; }
+    }
+    bool isStalling;
+    public bool IsStalling
+    {
+        get { return isStalling; }
     }
     void PassCameraControl()
     {
@@ -314,6 +305,11 @@ public class PlayerFighterController : MonoBehaviour
     {
         SetUI();
         JetEngineControl();
+    }
+    void FixedUpdate()
+    {
+        MoveAircraft();
+        PassCameraControl();
     }
 }
 

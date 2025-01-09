@@ -39,6 +39,7 @@ public class MinimapCamera : MonoBehaviour
     Vector2 cameraSize;
     float sizeReciprocal;
     int minimapIndex;
+    int savedMinimapIndex;  // saved on pause
 
     public MinimapIndex GetMinimapIndex()
     {
@@ -56,6 +57,19 @@ public class MinimapCamera : MonoBehaviour
             minimapIndex = (++minimapIndex) % 3;
             SetCamera();
         }
+    }
+    public void SetPauseMinimapCamera(bool isPaused)
+    {
+        if (isPaused)
+        {
+            savedMinimapIndex = minimapIndex;
+            minimapIndex = (int)MinimapIndex.All;
+        }
+        else
+        {
+            minimapIndex = savedMinimapIndex;
+        }
+        SetCamera();
     }
     public void SetCamera()
     {
