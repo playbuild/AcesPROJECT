@@ -91,7 +91,7 @@ public class UIController : MonoBehaviour
 
     AudioSource audioSource;
 
-    public float remainTime;
+    float remainTime;
     int score = 0;
     bool isTimeLow = false;
     bool isRedTimerActive = false;

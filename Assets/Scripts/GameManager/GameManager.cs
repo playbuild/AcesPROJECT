@@ -38,6 +38,12 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TargetController targetController;
 
+    [Header("Mission Managers")]
+    [SerializeField]
+    ScriptManager scriptManager;
+    [SerializeField]
+    MissionManager missionManager;
+
     [Header("Pause Control")]
     bool isPaused = false;
 
@@ -102,6 +108,14 @@ public class GameManager : MonoBehaviour
     public static WeaponController WeaponController
     {
         get { return Instance?.weaponController; }
+    }
+    public static ScriptManager ScriptManager
+    {
+        get { return Instance?.scriptManager; }
+    }
+    public static MissionManager MissionManager
+    {
+        get { return Instance?.missionManager; }
     }
     public static CameraController CameraController
     {
@@ -240,7 +254,9 @@ public class GameManager : MonoBehaviour
             }
         }
         isGameOver = true;
+        scriptManager.ClearScriptQueue();
 
+        missionManager.OnGameOver(isDead);
         Invoke("GameOverFadeOut", gameOverFadeOutDelay);
     }
     // Show/Hide Pause UI Canvas, Hide/Show other UIs, Set TimeScale
