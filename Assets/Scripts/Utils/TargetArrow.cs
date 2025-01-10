@@ -35,8 +35,11 @@ public class TargetArrow : MonoBehaviour
     TextMeshProUGUI mainTargetText;
 
     bool drawLines = true;
+    bool isLocked;
     private Camera cam;
-    RectTransform canvasRect;
+
+    Vector2 screenSize;
+    float screenAdjustFactor;
 
     // Recursive search
     Canvas GetCanvas(Transform parentTransform)
@@ -129,11 +132,8 @@ public class TargetArrow : MonoBehaviour
 
     void Start()
     {
-        Canvas canvas = GetCanvas(textUITransform.parent);
-        if (canvas != null)
-        {
-            canvasRect = canvas.GetComponent<RectTransform>();
-        }
+        screenSize = new Vector2(Screen.width, Screen.height);
+        screenAdjustFactor = Mathf.Max((1920.0f / Screen.width), (1080.0f / Screen.height));
     }
 
     // Update is called once per frame
@@ -149,6 +149,8 @@ public class TargetArrow : MonoBehaviour
         arrowTransform.eulerAngles = cameraAttachedTransform.localEulerAngles;
 
         Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, textTransform.position);
-        textUITransform.anchoredPosition = screenPoint - canvasRect.sizeDelta * 0.5f;
+        Vector2 position = screenPoint - screenSize * 0.5f;
+        position *= screenAdjustFactor;
+        textUITransform.anchoredPosition = position;
     }
 }

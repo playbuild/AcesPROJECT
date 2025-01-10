@@ -20,6 +20,8 @@ public class AlertUIController : MonoBehaviour
     [SerializeField]
     LabelInfo startMission;
     [SerializeField]
+    LabelInfo missionUpdated;
+    [SerializeField]
     LabelInfo destroyed;
     [SerializeField]
     LabelInfo hit;
@@ -68,6 +70,7 @@ public class AlertUIController : MonoBehaviour
         Missed,
         Hit,
         Destroyed,
+        MissionUpdated,
         MissionAccomplished,
         MissionFailed
     }
@@ -115,6 +118,9 @@ public class AlertUIController : MonoBehaviour
         {
             case LabelEnum.StartMission:
                 labelInfo = startMission;
+                break;
+            case LabelEnum.MissionUpdated:
+                labelInfo = missionUpdated;
                 break;
             case LabelEnum.Missed:
                 labelInfo = missed;

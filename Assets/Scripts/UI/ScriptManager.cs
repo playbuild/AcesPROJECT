@@ -1,23 +1,29 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.ResourceManagement;
-using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
-using System.Xml;
 using System;
+using UnityEngine.AddressableAssets;
+using System.Xml;
 using TMPro;
+using UnityEngine.UI;
 
 [Serializable]
 public class ScriptData
 {
     public List<ScriptInfo> scripts;
 }
+
 public class ScriptManager : MonoBehaviour
 {
     ScriptData scriptData;
 
+    Dictionary<string, ScriptInfo> subtitleDictionary;
+
+    [Header("Script Data")]
+    [SerializeField]
     TextAsset scriptJSONAsset;
+
+    [Header("Subtitle")]
+    [SerializeField]
     TextAsset subtitleXMLAsset;
     XmlDocument subtitleXMLDocument;
 
@@ -72,6 +78,7 @@ public class ScriptManager : MonoBehaviour
         }
         return false;
     }
+
     // Scripts
     ScriptInfo SearchScriptInfoByKey(string scriptKey)
     {
@@ -81,42 +88,30 @@ public class ScriptManager : MonoBehaviour
         }
         return null;
     }
+
     public void AddScript(string scriptKey)
     {
         scriptQueue.AddLast(SearchScriptInfoByKey(scriptKey));
     }
+
     public void AddScript(List<string> scriptKeyList)
     {
         foreach (string scriptKey in scriptKeyList)
         {
-            Debug.Log(scriptKey);
             scriptQueue.AddLast(SearchScriptInfoByKey(scriptKey));
         }
     }
+
     public void AddScriptAtFront(string scriptKey)
     {
         scriptQueue.AddFirst(SearchScriptInfoByKey(scriptKey));
     }
-    public void ClearScriptQueue(bool clearNotRemovableScripts = false)
+
+    public void ClearScriptQueue()
     {
-        if (clearNotRemovableScripts == true)
-        {
-            scriptQueue.Clear();
-        }
-        else
-        {
-            var node = scriptQueue.First;
-            while (node != null)
-            {
-                var next = node.Next;
-                if (node.Value.isRemovable == true)
-                {
-                    scriptQueue.Remove(node);
-                }
-                node = next;
-            }
-        }
+        scriptQueue.Clear();
     }
+
     Color GetColorBySide(string sideString)
     {
         switch (sideString)
@@ -128,7 +123,7 @@ public class ScriptManager : MonoBehaviour
         }
     }
 
-    public string GetSubtitleText(string subtitleKey)
+    string GetSubtitleText(string subtitleKey)
     {
         XmlNode subtitleNode = subtitleXMLDocument.SelectSingleNode("subtitle/" + subtitleKey);
 
@@ -189,15 +184,12 @@ public class ScriptManager : MonoBehaviour
         {
             Invoke("ShowScript", currentScript.preDelay);
         }
-
     }
-
     void PlayTransmissionAudio()
     {
         transmissionAudioSource.Play();
         Invoke("ShowScript", transmissionAudioSource.clip.length);
     }
-
     void ShowScript()
     {
         scriptUI.SetActive(true);
@@ -213,6 +205,7 @@ public class ScriptManager : MonoBehaviour
         }
         Invoke("HideScript", scriptAudioSource.clip.length);
     }
+
     void HideScript()
     {
         scriptUI.SetActive(false);
@@ -221,55 +214,31 @@ public class ScriptManager : MonoBehaviour
 
         Addressables.Release(audioClipHandle);
 
-        if (portraitUI.activeInHierarchy == true)
+        if (portraitUI.activeSelf == true)
         {
             Addressables.Release(portraitHandle);
             portraitUI.SetActive(false);
         }
+
         currentScript = null;
-    }
-    public void PlayCutsceneAudio(string subtitleKey)
-    {
-        // Get AudioClip
-        audioClipHandle = Addressables.LoadAssetAsync<AudioClip>(subtitleKey);
-        audioClipHandle.Completed += (operationHandle) =>
-        {
-            AudioClip audioClip = operationHandle.Result;
-            scriptAudioSource.clip = audioClip;
-            scriptAudioSource.Play();
-            if (currentScript.isImportant == true)
-            {
-                Invoke("ReleaseCutsceneAudio", audioClip.length);
-            }
-        };
-    }
-    void ReleaseCutsceneAudio()
-    {
-        Addressables.Release(audioClipHandle);
     }
 
     void Awake()
     {
         scriptQueue = new LinkedList<ScriptInfo>();
         scriptUI.SetActive(false);
-
     }
+
     void Start()
     {
-        scriptJSONAsset = GameManager.MissionManager.MissionInfo.ScriptJSON;
-        subtitleXMLAsset = GameManager.MissionManager.MissionInfo.GetScriptXML();
-
         // Load Subtitle XML
         subtitleXMLDocument = new XmlDocument();
         subtitleXMLDocument.LoadXml(subtitleXMLAsset.text);
 
         // Load Script JSON
         scriptData = JsonUtility.FromJson<ScriptData>(scriptJSONAsset.text);
-        foreach (ScriptInfo script in scriptData.scripts)
-        {
-            Debug.Log($"로드된 스크립트: subtitleKey='{script.subtitleKey}', name='{script.name}'");
-        }
     }
+
     void Update()
     {
         if (isPrintingScript == false && scriptQueue.Count > 0)

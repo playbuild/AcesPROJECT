@@ -33,23 +33,23 @@ public class MissionManager : MonoBehaviour
     }
     public virtual void OnGameOver(bool isDead)
     {
-        GameManager.ScriptManager.ClearScriptQueue();
-
-        if (isDead)
+        if (isDead == true)
         {
+            if (onDeadScripts.Count == 0) return;
             int index = UnityEngine.Random.Range(0, onDeadScripts.Count);
             GameManager.ScriptManager.AddScript(onDeadScripts[index]);
         }
         else
         {
+            if (onMissionFailedScripts.Count == 0) return;
             GameManager.ScriptManager.AddScript(onMissionFailedScripts);
         }
     }
+    public virtual void SetupForRestartFromCheckpoint() { }
 
-    void Start()
+    protected virtual void Start()
     {
         GameManager.UIController.SetRemainTime(timeLimit);
-        Debug.Log(onMissionStartScripts.Count);
         GameManager.ScriptManager.AddScript(onMissionStartScripts);
     }
 }

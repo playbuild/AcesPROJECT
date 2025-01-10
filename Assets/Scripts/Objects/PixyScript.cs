@@ -6,8 +6,8 @@ using UnityEngine.Events;
 public class PixyScript : EnemyAircraft
 {
     [Header("PixyScript Properties")]
-    bool isInvincible;
-    bool isAttackable;
+    bool isInvincible = false;
+    bool isAttackable = true;
 
     int phase = 1;
 
@@ -21,10 +21,21 @@ public class PixyScript : EnemyAircraft
     [SerializeField]
     UnityEvent phase3EndEvents;
 
+    [SerializeField]
+    int phase3LowHPScriptThreshold;
+    [SerializeField]
+    string phase3LowHPScript;
+    bool hasPrintedLowHPScript = false;
+
     EnemyWeaponController weaponController;
     PixyMPBMController mpbmController;
     ECMSystem ecmSystem;
 
+    public void SetPhase3()
+    {
+        phase = 3;
+        pixyTLS.enabled = false;
+    }
     public bool MPBMController
     {
         set { mpbmController.enabled = value; }
@@ -40,7 +51,11 @@ public class PixyScript : EnemyAircraft
     }
     public bool IsAttackable
     {
-        set
+        get
+        {
+            return isAttackable;
+        }
+        private set
         {
             isAttackable = value;
             SetMinimapSpriteVisible(value);
@@ -69,11 +84,18 @@ public class PixyScript : EnemyAircraft
         float applyDamage = (isInvincible == true) ? 0 : damage;
 
         base.OnDamage(applyDamage, layer);
+
+        if (hasPrintedLowHPScript == false && phase == 3 && hp <= phase3LowHPScriptThreshold)
+        {
+            hasPrintedLowHPScript = true;
+            GameManager.ScriptManager.AddScript(phase3LowHPScript);
+        }
     }
 
     protected override void DestroyObject()
     {
         IsAttackable = false;
+        GameManager.ScriptManager.ClearScriptQueue();
 
         switch (phase)
         {
@@ -96,14 +118,8 @@ public class PixyScript : EnemyAircraft
     {
         CommonDestroyFunction();
     }
-
-    public void InvokeActivateEnemy()
-    {
-        Invoke("ActivateEnemy", 3.0f);
-    }
     public void ActivateEnemy()
     {
-        Debug.Log("Activated");
         hp = objectInfo.HP;
         IsAttackable = true;
     }
@@ -111,16 +127,13 @@ public class PixyScript : EnemyAircraft
     protected override void Start()
     {
         base.Start();
-        isInvincible = false;
-        isAttackable = true;
-
+        weaponController = GetComponent<EnemyWeaponController>();
         mpbmController = GetComponent<PixyMPBMController>();
+        ecmSystem = GetComponent<ECMSystem>();
     }
     // Update is called once per frame
     protected override void Update()
     {
         base.Update();
-        weaponController = GetComponent<EnemyWeaponController>();
-        Debug.Log(phase);
     }
 }
