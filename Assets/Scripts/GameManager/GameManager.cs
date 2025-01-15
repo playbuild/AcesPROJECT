@@ -331,13 +331,23 @@ public class GameManager : MonoBehaviour
 
     public void QuitMission()
     {
+        playerInput.enabled = false;
+        pauseController.enabled = false;
+        gameOverController.enabled = false;
+
         fadeController.OnFadeOutComplete.AddListener(QuitMissionEvent);
         fadeController.FadeOut();
     }
 
     void QuitMissionEvent()
     {
-        Application.Quit();
+        ResultData.missionName = "";
+        SceneManager.LoadScene("Title");
+    }
+
+    public void ShowResultScene()
+    {
+        SceneManager.LoadScene("Title");
     }
     void GameOverFadeOut()
     {
