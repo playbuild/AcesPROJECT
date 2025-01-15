@@ -13,6 +13,7 @@ public class TargetObject : MonoBehaviour
 
     protected bool isEnemy;
     protected float hp;
+    protected float maxhp;
     public bool isNextTarget;
 
     int lastHitLayer;
@@ -21,6 +22,7 @@ public class TargetObject : MonoBehaviour
     protected bool isWarning;
 
     protected MinimapSprite minimapSprite;
+    protected Collider objectCollider;
     protected bool isDestroyed;
 
     protected TargetUI targetUI;
@@ -33,10 +35,7 @@ public class TargetObject : MonoBehaviour
 
     public ObjectInfo Info
     {
-        get
-        {
-            return objectInfo;
-        }
+        get { return objectInfo; }
     }
     public List<Missile> LockedMissiles
     {
@@ -48,6 +47,79 @@ public class TargetObject : MonoBehaviour
     {
         get { return isLocking; }
         set { isLocking = value; }
+    }
+
+    bool isOnMissleAlert;
+    public bool IsOnMissleAlert
+    {
+        get { return isOnMissleAlert; }
+        set { isOnMissleAlert = value; }
+    }
+
+    public virtual void OnDamage(float damage, int layer, string tag = "")
+    {
+        hp -= damage;
+        lastHitLayer = layer;
+
+        if (lastHitLayer == LayerMask.NameToLayer("Player")) // Hit by Player
+        {
+            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Hit);
+        }
+
+        if (hp <= 0 && isDestroyed == false)
+        {
+            hp = 0;
+            DestroyObject();
+        }
+    }
+    public virtual void OnMissileAlert()
+    {
+
+    }
+    public virtual void AddLockedMissile(Missile missile)
+    {
+        lockedMissiles.Add(missile);
+    }
+
+    public virtual void RemoveLockedMissile(Missile missile)
+    {
+        lockedMissiles.Remove(missile);
+    }
+
+    protected void CheckMissileDistance()
+    {
+        bool existWarningMissile = false;
+        bool executeWarning = false;
+        foreach (Missile missile in lockedMissiles)
+        {
+            float distance = Vector3.Distance(missile.transform.position, transform.position);
+
+            if (distance < Info.WarningDistance)
+            {
+                existWarningMissile = true;
+
+                if (missile.HasWarned == false)
+                {
+                    executeWarning = true;
+                    missile.HasWarned = true;
+                    break;
+                }
+            }
+        }
+
+        if (executeWarning)
+        {
+            OnMissileAlert();
+        }
+
+        if (existWarningMissile == true)
+        {
+            isWarning = true;
+        }
+        else
+        {
+            isWarning = false;
+        }
     }
     public void DeleteMinimapSprite()
     {
@@ -92,100 +164,47 @@ public class TargetObject : MonoBehaviour
                 GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
             }
         }
-    }
-    public virtual void OnDamage(float damage, int layer, string tag = "")
-    {
-        hp -= damage;
-        lastHitLayer = layer;
-
-        if (lastHitLayer == LayerMask.NameToLayer("Player")) // Hit by Player
-        {
-            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Hit);
-        }
-
-        if (hp <= 0)
-        {
-            DestroyObject();
-            GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Destroyed);
-        }
-    }
-    public virtual void OnMissileAlert()
-    {
-
-    }
-    public virtual void AddLockedMissile(Missile missile)
-    {
-        lockedMissiles.Add(missile);
-    }
-
-    public void RemoveLockedMissile(Missile missile)
-    {
-        lockedMissiles.Remove(missile);
-    }
-
-    protected void CheckMissileDistance()
-    {
-        bool existWarningMissile = false;
-        bool executeWarning = false;
-        foreach (Missile missile in lockedMissiles)
-        {
-            float distance = Vector3.Distance(missile.transform.position, transform.position);
-
-            if (distance < Info.WarningDistance)
-            {
-                existWarningMissile = true;
-
-                if (missile.HasWarned == false)
-                {
-                    executeWarning = true;
-                    missile.HasWarned = true;
-                    break;
-                }
-            }
-        }
-
-        if (executeWarning)
-        {
-            OnMissileAlert();
-        }
-
-        if (existWarningMissile == true)
-        {
-            isWarning = true;
-        }
-        else
-        {
-            isWarning = false;
-        }
+        DeleteMinimapSprite();
     }
     protected virtual void DestroyObject()
     {
-        GameObject obj = Instantiate(destroyEffect, transform.position, Quaternion.identity);
-        if (isEnemy == true)
-        {
-            GameManager.Instance?.RemoveEnemy(this);
-            GameManager.TargetController?.RemoveTargetUI(this); // Test Only
-            GameManager.WeaponController?.ChangeTarget();
-        }
+        CommonDestroyFunction();
+        objectCollider.enabled = false;
 
         Destroy(gameObject);
-        DeleteMinimapSprite();
+    }
+    protected virtual void AdjustValuesByDifficulty()
+    {
+
     }
     protected virtual void Start()
     {
+        objectCollider = GetComponent<Collider>();
+
         isEnemy = gameObject.layer != LayerMask.NameToLayer("Player");
         if (isEnemy == true)
         {
             GameManager.TargetController.CreateTargetUI(this);
             GameManager.Instance?.AddEnemy(this);
         }
-        hp = objectInfo.HP;
-    }
-    void OnDestroy()
-    {
-        if (GameManager.TargetController != null)
+
+        maxhp = hp = objectInfo.HP;
+        lastHitLayer = 0;
+
+        for (int i = 0; i < transform.childCount; i++)
         {
-            GameManager.TargetController.RemoveTargetUI(this);
+            GameObject childObject = transform.GetChild(i).gameObject;
+            if (childObject.layer == LayerMask.NameToLayer("Minimap"))
+            {
+                minimapSprite = childObject.GetComponent<MinimapSprite>();
+                break;
+            }
         }
+
+        AdjustValuesByDifficulty();
+    }
+    protected void OnDestroy()
+    {
+
     }
 }

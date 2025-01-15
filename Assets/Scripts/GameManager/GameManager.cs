@@ -73,12 +73,19 @@ public class GameManager : MonoBehaviour
     bool isGameOver = false;
 
     [SerializeField]
+    UnityEvent executeOnGameOver;
+    [SerializeField]
+    List<GameObject> disableOnGameOver;
+    [SerializeField]
     List<GameObject> disableOnGameOverObjects;
     [SerializeField]
     List<GameObject> enableOnGameOverObjects;
 
     [SerializeField]
     DeathCam deathCam;
+
+    [SerializeField]
+    AudioController audioController;
 
     List<TargetObject> objects = new List<TargetObject>();
 
@@ -220,17 +227,27 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver(bool isDead, bool isInstantDeath = false)
     {
-        float gameOverFadeOutDelay = 3.0f;
+        float gameOverFadeOutDelay = 5.0f;
+        audioController.TargetBGMVolume = AudioController.MIN_VOLUME;
 
+        // Set UI
         UIController.SetLabel(AlertUIController.LabelEnum.MissionFailed);
 
         foreach (TargetObject obj in objects)
         {
             obj.DeleteMinimapSprite();
         }
+
+        executeOnGameOver.Invoke();
+
         targetController.RemoveAllTargetUI();
         objects.Clear();
         weaponController.ChangeTarget();
+
+        foreach (GameObject obj in disableOnGameOver)
+        {
+            obj.SetActive(false);
+        }
 
         if (isDead)
         {
@@ -253,13 +270,14 @@ public class GameManager : MonoBehaviour
                 gameOverAudioSource.Play();
             }
         }
-        isGameOver = true;
-        scriptManager.ClearScriptQueue();
 
+        isGameOver = true;
+        scriptManager.ClearScriptQueue(true);
+
+        ResultData.elapsedTime += GameManager.UIController.StopCountAndGetElapsedTime();
         missionManager.OnGameOver(isDead);
         Invoke("GameOverFadeOut", gameOverFadeOutDelay);
     }
-    // Show/Hide Pause UI Canvas, Hide/Show other UIs, Set TimeScale
     public void OnPause(InputAction.CallbackContext context)
     {
         if (context.action.phase == InputActionPhase.Performed)
@@ -326,7 +344,7 @@ public class GameManager : MonoBehaviour
         CancelInvoke();
 
         fadeController.OnFadeOutComplete.AddListener(ShowGameOverUI);
-        fadeController.FadeOut(true);
+        fadeController.FadeOut(FadeController.FadeInReserveType.FadeIn);
     }
     void ShowGameOverUI()
     {
@@ -347,6 +365,10 @@ public class GameManager : MonoBehaviour
 
         string actionMapName = (usePlayerActionMap == true) ? "FighterAction" : "UI";
         playerInput.SwitchCurrentActionMap(actionMapName);
+    }
+    public void SetGlobalFog(bool value)
+    {
+        RenderSettings.fog = value;
     }
     void Awake()
     {

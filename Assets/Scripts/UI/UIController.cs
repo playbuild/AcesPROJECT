@@ -95,6 +95,7 @@ public class UIController : MonoBehaviour
     int score = 0;
     bool isTimeLow = false;
     bool isRedTimerActive = false;
+    bool enableCount = true;
 
     float elapsedTime = 0;
 
@@ -105,6 +106,16 @@ public class UIController : MonoBehaviour
     public MinimapCamera MinimapCamera
     {
         get { return minimapCamera; }
+    }
+    public float StopCountAndGetElapsedTime()
+    {
+        enableCount = false;
+        return elapsedTime;
+    }
+    public void StartCountAndResetElapsedTime()
+    {
+        enableCount = true;
+        elapsedTime = 0;
     }
     public void SetSpeed(int speed)
     {

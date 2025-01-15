@@ -14,25 +14,37 @@ public class PlayerFighterController : MonoBehaviour
     float yawQValue;
     float yawEValue;
 
-    public float speed;
+    float speed;
 
     [Header("Aircraft Settings")]
-    public float maxSpeed = 301.7f; // 최대 속력
-    public float minSpeed = 20f; //최저 속력
-    public float defaultSpeed = 60f; // 기본 속도
+    [SerializeField]
+    float maxSpeed = 301.7f;
+    [SerializeField]
+    float minSpeed = 15;
+    [SerializeField]
+    float defaultSpeed = 60;
 
     [Header("Move Variables")]
-    public float throttleAmount;
-    public float accelerateAmount; // 가속 
-    public float brakeAmount;
-    public float calibrateAmount; // 기본 속도로의 복구 속도
-    public float rollAmount;
-    public float pitchAmount;
-    public float yawAmount;
-    public float rotateLerpAmount;
+    [SerializeField]
+    float throttleAmount;
 
-    //public float lerpAmount;
-    //Vector2 rightStickValue;
+    [SerializeField]
+    float accelerateAmount;
+    [SerializeField]
+    float brakeAmount;
+    [SerializeField]
+    float calibrateAmount;  // Speed Calibration
+
+    [SerializeField]
+    float rollAmount;
+    [SerializeField]
+    float pitchAmount;
+    [SerializeField]
+    float yawAmount;
+
+    [SerializeField]
+    float rotateLerpAmount;
+
     Vector3 rotateValue;
 
     [Header("High-G Turn")]
@@ -59,6 +71,7 @@ public class PlayerFighterController : MonoBehaviour
 
     Rigidbody rb;
     float speedReciprocal; // maxSpeed의 역수
+    Vector3 rotateReciprocal;
 
     CameraController cameraController;
     UIController uiController;
@@ -87,17 +100,11 @@ public class PlayerFighterController : MonoBehaviour
     {
         get { return isStalling; }
     }
-    void PassCameraControl()
-    {
-        float zoomValue = accelerateValue - brakeValue;
-        cameraController.AdjustCameraValue(zoomValue, rollValue, pitchValue);
-    }
 
-    void OnEnable()
+    public void Accelerate(InputAction.CallbackContext context)
     {
-        speedReciprocal = 1 / maxSpeed;
+        accelerateValue = context.ReadValue<float>();
     }
-
     public void Brake(InputAction.CallbackContext context)
     {
         brakeValue = context.ReadValue<float>();
@@ -120,10 +127,6 @@ public class PlayerFighterController : MonoBehaviour
     public void YawE(InputAction.CallbackContext context)
     {
         yawEValue = context.ReadValue<float>();
-    }
-    public void Accelerate(InputAction.CallbackContext context)
-    {
-        accelerateValue = context.ReadValue<float>();
     }
     void SetUI()
     {
@@ -268,7 +271,11 @@ public class PlayerFighterController : MonoBehaviour
 
         rb.velocity = transform.forward * speed;
     }
-
+    void PassCameraControl()
+    {
+        float zoomValue = accelerateValue - brakeValue;
+        cameraController.AdjustCameraValue(zoomValue, rollValue, pitchValue);
+    }
     void JetEngineControl()
     {
         foreach (JetEngineController jet in jetEngineControllers)
@@ -276,9 +283,29 @@ public class PlayerFighterController : MonoBehaviour
             jet.InputValue = throttle;
         }
     }
-    public void DisableControl()
+    void OnDisable()
     {
-        GetComponent<PlayerInput>().enabled = false;
+        foreach (JetEngineController jet in jetEngineControllers)
+        {
+            jet.enabled = false;
+        }
+        CapsuleCollider[] colliders = GetComponents<CapsuleCollider>();
+        foreach (CapsuleCollider collider in colliders)
+        {
+            collider.enabled = false;
+        }
+    }
+    void OnEnable()
+    {
+        foreach (JetEngineController jet in jetEngineControllers)
+        {
+            jet.enabled = true;
+        }
+        CapsuleCollider[] colliders = GetComponents<CapsuleCollider>();
+        foreach (CapsuleCollider collider in colliders)
+        {
+            collider.enabled = true;
+        }
     }
 
     void Start()
@@ -298,8 +325,10 @@ public class PlayerFighterController : MonoBehaviour
         isHighGEnabled = true;
 
         rb = GetComponent<Rigidbody>();
-
         cameraController = GetComponent<CameraController>();
+
+        speedReciprocal = 1 / maxSpeed;
+        speed = defaultSpeed;
     }
     void Update()
     {

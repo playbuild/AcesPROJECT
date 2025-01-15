@@ -41,6 +41,10 @@ public class PlayerAircraft : TargetObject
     {
         get { return missileEmergencyDistance; }
     }
+    public int Score
+    {
+        get { return score; }
+    }
     public override void AddLockedMissile(Missile missile)
     {
         base.AddLockedMissile(missile);
@@ -85,6 +89,11 @@ public class PlayerAircraft : TargetObject
         CommonDestroyFunction();
         GameManager.Instance.GameOver(true, false);
         Invoke("DelayedDestroy", destroyDelay);
+
+        foreach (TrailRenderer trailRenderer in contrails)
+        {
+            trailRenderer.emitting = false;
+        }
     }
     void DestroyObjectImmediate()
     {

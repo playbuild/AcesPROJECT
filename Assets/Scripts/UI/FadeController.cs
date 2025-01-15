@@ -3,11 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using static FadeController;
 
 public class FadeController : MonoBehaviour
 {
+    public enum FadeInReserveType
+    {
+        None,
+        FadeIn,
+        InstantFadeIn
+    }
+
     [SerializeField]
     Image image;
+
+    [SerializeField]
+    float initialFadeInTime;
 
     [SerializeField]
     float fadeInTime;
@@ -48,16 +59,29 @@ public class FadeController : MonoBehaviour
         set { onFadeOutComplete = value; }
     }
 
-    public void FadeOut(bool reserveFadeIn = false)
+    public void FadeOut(FadeInReserveType fadeInReserveType = FadeInReserveType.None)
 
     {
         isFadeIn = false;
         isFadeOut = true;
 
-        if (reserveFadeIn == true)
+        switch (fadeInReserveType)
         {
-            onFadeOutComplete.AddListener(FadeIn);
+            case FadeInReserveType.FadeIn:
+                onFadeOutComplete.AddListener(FadeIn);
+                break;
+
+            case FadeInReserveType.InstantFadeIn:
+                onFadeOutComplete.AddListener(InstantFadeIn);
+                break;
         }
+    }
+    public void InstantFadeOut()
+    {
+        isFadeIn = false;
+        isFadeOut = false;
+        color = Color.black;
+        image.color = color;
     }
     void FadeIn()
     {
@@ -67,21 +91,39 @@ public class FadeController : MonoBehaviour
 
         onFadeOutComplete.RemoveAllListeners();
     }
-    // Start is called before the first frame update
+    void InstantFadeIn()
+    {
+        onFadeOutComplete.RemoveAllListeners();
+
+        color.a = 0;
+        image.color = color;
+
+        if (invokeOnFadeInEvents == true)
+        {
+            onFadeInComplete.Invoke();
+            invokeOnFadeInEvents = false;
+        }
+    }
+    IEnumerator InitialFadeIn()
+    {
+        yield return new WaitForSeconds(initialFadeInTime);
+
+        isFadeIn = true;
+        isFadeOut = false;
+        isWaitingFadeOutEvent = false;
+    }
     void Start()
     {
         fadeInReciprocal = 1 / fadeInTime;
         fadeOutReciprocal = 1 / fadeOutTime;
 
-        isFadeIn = true;
-        isFadeOut = false;
-        isWaitingFadeOutEvent = false;
+        color = Color.black;
+        image.color = color;
 
         invokeOnFadeInEvents = true;
         fadeOutEventWaitingTimer = fadeOutEventWaitingTime;
 
-        color = Color.black;
-        image.color = color;
+        StartCoroutine(InitialFadeIn());
     }
 
     // Update is called once per frame

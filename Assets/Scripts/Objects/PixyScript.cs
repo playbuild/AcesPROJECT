@@ -111,8 +111,6 @@ public class PixyScript : EnemyAircraft
                 phase3EndEvents.Invoke();
                 break;
         }
-
-        phase++;
     }
     public void CallDestroyFunction()
     {
@@ -122,6 +120,8 @@ public class PixyScript : EnemyAircraft
     {
         hp = objectInfo.HP;
         IsAttackable = true;
+
+        if (phase < 3) phase++;
     }
     // Start is called before the first frame update
     protected override void Start()
@@ -135,5 +135,14 @@ public class PixyScript : EnemyAircraft
     protected override void Update()
     {
         base.Update();
+    }
+    public void CreateExplosionEffect()
+    {
+        if (Application.isPlaying)
+        {
+            GameObject effect = GameManager.Instance.BigExplosionPool.GetPooledObject();
+            effect.transform.position = transform.position;
+            effect.SetActive(true);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Xml;
 
 [CreateAssetMenu(fileName = "MissionInfo", menuName = "Scriptable Object Asset/MissionInfo")]
 public class MissionInfo : ScriptableObject

@@ -5,8 +5,6 @@ using UnityEngine.Events;
 
 public class MissionZERO : MissionManager
 {
-    int phase = 1;
-
     [Header("Phase System")]
     [Header("Phase 1")]
     [SerializeField]
@@ -40,6 +38,13 @@ public class MissionZERO : MissionManager
 
     Queue<string> currentScriptQueue;
 
+    [Space(10)]
+    [SerializeField]
+    PixyScript pixy;
+
+    [SerializeField]
+    CutsceneController cutsceneController;
+
     [SerializeField]
     Transform phase3PixyTransform;
     [SerializeField]
@@ -50,10 +55,19 @@ public class MissionZERO : MissionManager
     [SerializeField]
     int phase3TimeLimit;
 
-    [Space(10)]
-    [SerializeField]
-    PixyScript pixy;
-    // Start is called before the first frame update
+    ResultData resultData;
+
+    public void CheckElapsedTimeBeforePhase3()
+    {
+        ResultData.elapsedTime += GameManager.UIController.StopCountAndGetElapsedTime();
+    }
+
+    public void CheckElapsedTimeAfterPhase3()
+    {
+        ResultData.elapsedTime += GameManager.UIController.StopCountAndGetElapsedTime();
+        ResultData.score = GameManager.PlayerAircraft.Score;
+    }
+
     public void OnPhaseEnd()
     {
         switch (phase)
@@ -129,7 +143,7 @@ public class MissionZERO : MissionManager
         {
             Shuffle<string>(ref phase2Scripts);
             currentScriptQueue = new Queue<string>(phase2Scripts);
-            Invoke("PrintPhase2Script", Random.Range(5, 10));
+            Invoke("PrintPhase2Script", Random.Range(30, 60));
         }
     }
 
@@ -139,7 +153,7 @@ public class MissionZERO : MissionManager
 
         if (currentScriptQueue.Count > 0)
         {
-            Invoke("PrintPhase2Script", Random.Range(5, 10));
+            Invoke("PrintPhase2Script", Random.Range(30, 60));
         }
     }
     public void SetPhase3Position()
@@ -155,8 +169,30 @@ public class MissionZERO : MissionManager
         redTimer.RemainTime = phase3TimeLimit;
         redTimer.gameObject.SetActive(true);
     }
+    public void PlayPhase3Cutscene()
+    {
+        cutsceneController.PlayPhase3Cutscene();
+    }
+    public void PlayEndingCutscene()
+    {
+        cutsceneController.PlayEndingCutscene();
+    }
+
+    public override void SetupForRestartFromCheckpoint()
+    {
+        if (phase < 3)
+        {
+            phase = 1;
+            ResultData.elapsedTime = 0;
+        }
+        else
+        {
+            phase = 3;
+        }
+    }
     public void PlayAtCheckpoint()
     {
+        pixy.SetPhase3();
         OnPhaseStart();
     }
 
@@ -164,6 +200,7 @@ public class MissionZERO : MissionManager
     {
         if (phase == 3)
         {
+            SetResultData();
             PlayAtCheckpoint();
         }
         else

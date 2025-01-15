@@ -106,10 +106,25 @@ public class ScriptManager : MonoBehaviour
     {
         scriptQueue.AddFirst(SearchScriptInfoByKey(scriptKey));
     }
-
-    public void ClearScriptQueue()
+    public void ClearScriptQueue(bool clearNotRemovableScripts = false)
     {
-        scriptQueue.Clear();
+        if (clearNotRemovableScripts == true)
+        {
+            scriptQueue.Clear();
+        }
+        else
+        {
+            var node = scriptQueue.First;
+            while (node != null)
+            {
+                var next = node.Next;
+                if (node.Value.isRemovable == true)
+                {
+                    scriptQueue.Remove(node);
+                }
+                node = next;
+            }
+        }
     }
 
     Color GetColorBySide(string sideString)
@@ -123,7 +138,7 @@ public class ScriptManager : MonoBehaviour
         }
     }
 
-    string GetSubtitleText(string subtitleKey)
+    public string GetSubtitleText(string subtitleKey)
     {
         XmlNode subtitleNode = subtitleXMLDocument.SelectSingleNode("subtitle/" + subtitleKey);
 
