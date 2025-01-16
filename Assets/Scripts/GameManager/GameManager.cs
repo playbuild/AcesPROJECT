@@ -306,6 +306,7 @@ public class GameManager : MonoBehaviour
     }
     public void RestartFromCheckpoint()
     {
+        playerInput.enabled = false;
         pauseController.enabled = false;
         gameOverController.enabled = false;
 
@@ -315,11 +316,19 @@ public class GameManager : MonoBehaviour
 
     void RestartFromCheckpointEvent()
     {
+        missionManager.SetupForRestartFromCheckpoint();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void RestartMission()
     {
+        MissionManager.phase = 1;
+        ResultData.elapsedTime = 0;
+
+        playerInput.enabled = false;
+        pauseController.enabled = false;
+        gameOverController.enabled = false;
+
         fadeController.OnFadeOutComplete.AddListener(RestartMissionEvent);
         fadeController.FadeOut();
     }

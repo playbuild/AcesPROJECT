@@ -81,12 +81,10 @@ public class Missile : MonoBehaviour
             smokeTrailEffect.GetComponent<SmokeTrail>()?.SetFollowTransform(smokeTrailPosition);
             smokeTrailEffect.SetActive(true);
         }
-    }
 
-    void Start()
-    {
         Invoke("DisableMissile", lifetime);
     }
+
     Vector3 GetPredictedTargetPosition()
     {
         if (targetRigidbody == null) return target.transform.position;
@@ -116,6 +114,7 @@ public class Missile : MonoBehaviour
 
         Vector3 targetPos = Vector3.Lerp(target.transform.position, GetPredictedTargetPosition(), smartTrackingRate);
         Vector3 targetDir = target.transform.position - transform.position;
+        
         float angle = Vector3.Angle(targetDir, transform.forward);
 
         if (angle > boresightAngle)
@@ -128,11 +127,12 @@ public class Missile : MonoBehaviour
             // Send Message to object that it is no more locked on
             target.GetComponent<TargetObject>()?.RemoveLockedMissile(this);
             target = null;
+
             return;
         }
 
         Quaternion lookRotation = Quaternion.LookRotation(targetPos - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turningForce * Time.deltaTime);
+        rb.rotation = Quaternion.Slerp(rb.rotation, lookRotation, turningForce * Time.fixedDeltaTime);
     }
     //미사일 충돌 이후 폭발
     void OnCollisionEnter(Collision other)
@@ -154,11 +154,7 @@ public class Missile : MonoBehaviour
         effect.transform.rotation = transform.rotation;
         effect.SetActive(true);
     }
-    public void RemoveTarget()
-    {
-        target = null;
-        DisableMissile();
-    }
+
     // Called by ECM System
     public void EvadeByECM(Vector3 randomPosition)
     {
@@ -177,6 +173,12 @@ public class Missile : MonoBehaviour
         Vector3 randomDirection = randomPosition - transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(randomDirection);
         rb.rotation = lookRotation;
+    }
+
+    public void RemoveTarget()
+    {
+        target = null;
+        DisableMissile();
     }
 
     void DisableMissile()
@@ -204,24 +206,34 @@ public class Missile : MonoBehaviour
             GameManager.UIController.SetLabel(AlertUIController.LabelEnum.Missed);
         }
     }
+    protected virtual void AdjustValuesByDifficulty()
+    {
+
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        parent = transform.parent;
     }
+    void Start()
+    {
+        AdjustValuesByDifficulty();
+    }
+
     private void OnDisable()
     {
+        if (smokeTrailEffect != null)
+        {
+            smokeTrailEffect.GetComponent<SmokeTrail>().StopFollow();
+        }
+
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        CancelInvoke();
     }
     // 미사일 속도 조절
     void FixedUpdate()
     {
-        if (speed < maxSpeed)
-        {
-            speed += accelAmount * Time.deltaTime;
-        }
-
-        transform.Translate(new Vector3(0, 0, speed * Time.deltaTime));
         LookAtTarget();
         if (speed < maxSpeed)
         {

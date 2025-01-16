@@ -11,6 +11,7 @@ public class WeaponController : MonoBehaviour
     // Weapon Inputs
     bool useSpecialWeapon;
 
+    [Header("Common Weapon System")]
     TargetObject target;
 
     ObjectPools missilePool;
@@ -46,6 +47,10 @@ public class WeaponController : MonoBehaviour
     [SerializeField]
     Missile specialWeapon;
     WeaponSlot[] spwSlots = new WeaponSlot[2];
+
+    [Header("UI / Misc.")]
+    [SerializeField]
+    MinimapCamera minimapCamera;
 
     [SerializeField]
     GunCrosshair gunCrosshair;
@@ -84,89 +89,7 @@ public class WeaponController : MonoBehaviour
             }
         }
     }
-    WeaponSlot GetAvailableWeaponSlot(ref WeaponSlot[] weaponSlots)
-    {
-        WeaponSlot oldestSlot = null;
 
-        foreach (WeaponSlot slot in weaponSlots)
-        {
-            if (slot.IsAvailable() == true)
-            {
-                if (oldestSlot == null)
-                {
-                    oldestSlot = slot;
-                }
-                else if (oldestSlot.LastStartCooldownTime > slot.LastStartCooldownTime)
-                {
-                    oldestSlot = slot;
-                }
-            }
-        }
-
-        return oldestSlot;
-    }
-    void LaunchMissile(ref int weaponCnt, ref ObjectPools objectPool, ref WeaponSlot[] weaponSlots)
-    {
-        WeaponSlot availableWeaponSlot = GetAvailableWeaponSlot(ref weaponSlots);
-
-        //Ammunition Zero
-        if (missileCnt <= 0)
-        {
-            if (voiceAudioSource.isPlaying == false)
-            {
-                voiceAudioSource.PlayOneShot(ammunationZeroClip);
-            }
-            return;
-        }
-        // Not available : Beep sound
-        if (availableWeaponSlot == null)
-        {
-            weaponAudioSource.PlayOneShot(cooldownClip);
-            return;
-        }
-
-        Vector3 missilePosition = (missileCnt % 2 == 1) ? rightMissileTransform.position : leftMissileTransform.position;
-
-        if (missileCnt % 2 == 1)
-        {
-            missilePosition = rightMissileTransform.position;
-            rightMslCooldown = missileCooldownTime;
-        }
-        else
-        {
-            missilePosition = leftMissileTransform.position;
-            leftMslCooldown = missileCooldownTime;
-        }
-
-        // Start Cooldown
-        availableWeaponSlot.StartCooldown();
-
-        // Get from Object Pool and Launch
-        GameObject missile = missilePool.GetPooledObject();
-        missile.transform.position = missilePosition;
-        missile.transform.rotation = transform.rotation;
-        missile.SetActive(true);
-
-        Missile missileScript = missile.GetComponent<Missile>();
-        TargetObject targetObject = (target != null && GameManager.TargetController.IsLocked == true) ? target : null;
-        missileScript.Launch(targetObject, fighterController.Speed + 15, gameObject.layer);
-
-        missileCnt--;
-
-        uiController.SetMissileText(missileCnt);
-        uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
-
-        weaponAudioSource.PlayOneShot(SoundManager.Instance.GetMissileLaunchClip());
-    }
-    void MissileCooldown(ref float cooldown)
-    {
-        if (cooldown > 0)
-        {
-            cooldown -= Time.deltaTime;
-            if (cooldown < 0) cooldown = 0;
-        }
-        else return;
-    }
     public void Guns(InputAction.CallbackContext context)
     {
         switch (context.action.phase)
@@ -181,24 +104,6 @@ public class WeaponController : MonoBehaviour
                 gunAudio.IsFiring = false;
                 break;
         }
-    }
-    void FireMachineGun()
-    {
-        if (bulletCnt <= 0)
-        {
-            // Beep sound
-            CancelInvoke("FireMachineGun");
-            return;
-        }
-
-        GameObject bullet = bulletPool.GetPooledObject();
-        bullet.transform.position = gunTransform.position;
-        bullet.transform.rotation = transform.rotation;
-        bullet.SetActive(true);
-
-        Bullet bulletScript = bullet.GetComponent<Bullet>();
-        bulletScript.Fire(fighterController.Speed, gameObject.layer);
-        bulletCnt--;
     }
     public void OnChangeTarget(InputAction.CallbackContext context)
     {
@@ -215,7 +120,7 @@ public class WeaponController : MonoBehaviour
             GameManager.CameraController.LockOnTarget(target.transform);
             isFocusingTarget = true;
         }
-        
+
         else if (context.action.phase == InputActionPhase.Canceled)
         {
             // Hold : Focus
@@ -249,6 +154,7 @@ public class WeaponController : MonoBehaviour
         GameManager.TargetController.ChangeTarget(target);
         gunCrosshair.SetTarget(target.transform);
     }
+
     TargetObject GetNextTarget()
     {
         List<TargetObject> targets = GameManager.Instance.GetTargetsWithinDistance(3000);
@@ -290,6 +196,107 @@ public class WeaponController : MonoBehaviour
         return selectedTarget;
     }
 
+    void FireMachineGun()
+    {
+        if (bulletCnt <= 0)
+        {
+            // Beep sound
+            CancelInvoke("FireMachineGun");
+            return;
+        }
+
+        GameObject bullet = bulletPool.GetPooledObject();
+        bullet.transform.position = gunTransform.position;
+        bullet.transform.rotation = transform.rotation;
+        bullet.SetActive(true);
+
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.Fire(fighterController.Speed, gameObject.layer);
+        bulletCnt--;
+    }
+    WeaponSlot GetAvailableWeaponSlot(ref WeaponSlot[] weaponSlots)
+    {
+        WeaponSlot oldestSlot = null;
+
+        foreach (WeaponSlot slot in weaponSlots)
+        {
+            if (slot.IsAvailable() == true)
+            {
+                if (oldestSlot == null)
+                {
+                    oldestSlot = slot;
+                }
+                else if (oldestSlot.LastStartCooldownTime > slot.LastStartCooldownTime)
+                {
+                    oldestSlot = slot;
+                }
+            }
+        }
+
+        return oldestSlot;
+    }
+
+    void LaunchMissile(ref int weaponCnt, ref ObjectPools objectPool, ref WeaponSlot[] weaponSlots)
+    {
+        WeaponSlot availableWeaponSlot = GetAvailableWeaponSlot(ref weaponSlots);
+
+        //Ammunition Zero
+        if (weaponCnt <= 0)
+        {
+            if (voiceAudioSource.isPlaying == false)
+            {
+                voiceAudioSource.PlayOneShot(ammunationZeroClip);
+            }
+            return;
+        }
+        // Not available : Beep sound
+        if (availableWeaponSlot == null)
+        {
+            weaponAudioSource.PlayOneShot(cooldownClip);
+            return;
+        }
+
+        Vector3 missilePosition;
+
+        // Select Launch Position
+        if (weaponCnt % 2 == 1)
+        {
+            missilePosition = rightMissileTransform.position;
+        }
+        else
+        {
+            missilePosition = leftMissileTransform.position;
+        }
+
+        // Start Cooldown
+        availableWeaponSlot.StartCooldown();
+
+        // Get from Object Pool and Launch
+        GameObject missile = missilePool.GetPooledObject();
+        missile.transform.position = missilePosition;
+        missile.transform.rotation = transform.rotation;
+        missile.SetActive(true);
+
+        Missile missileScript = missile.GetComponent<Missile>();
+        TargetObject targetObject = (target != null && GameManager.TargetController.IsLocked == true) ? target : null;
+        missileScript.Launch(targetObject, fighterController.Speed + 15, gameObject.layer);
+
+        weaponCnt--;
+
+        uiController.SetMissileText(missileCnt);
+        uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
+
+        weaponAudioSource.PlayOneShot(SoundManager.Instance.GetMissileLaunchClip());
+    }
+    //void MissileCooldown(ref float cooldown)
+    //{
+    //    if (cooldown > 0)
+    //    {
+    //        cooldown -= Time.deltaTime;
+    //        if (cooldown < 0) cooldown = 0;
+    //    }
+    //    else return;
+    //}
     public void SwitchWeapon(InputAction.CallbackContext context)
     {
         if (context.action.phase == InputActionPhase.Performed)
@@ -332,34 +339,41 @@ public class WeaponController : MonoBehaviour
             spwSlots[i] = new WeaponSlot(spwCooldownTime);
         }
     }
+    void SetMinimapCamera()
+    {
+        // Minimap
+        Vector2 distance = new Vector3(transform.position.x - target.transform.position.x,
+                                       transform.position.z - target.transform.position.z);
+        minimapCamera.SetZoom(distance.magnitude);
+    }
+
     public void Awake()
     {
+        fighterController = GetComponent<PlayerFighterController>();
+    }
+    void Start()
+    {
+        uiController = GameManager.UIController;
+
         missilePool = GameManager.Instance.missileObjectPool;
         specialWeaponPool = GameManager.Instance.specialWeaponObjectPool;
         bulletPool = GameManager.Instance.bulletObjectPool;
 
         missilePool.poolObject = missile.gameObject;
         specialWeaponPool.poolObject = specialWeapon.gameObject;
-    }
-    void Start()
-    {
-        uiController = GameManager.UIController;
 
-        fighterController = GetComponent<PlayerFighterController>();
+        useSpecialWeapon = false;
 
-        missilePool = GameManager.Instance.missileObjectPool;
-        bulletPool = GameManager.Instance.bulletObjectPool;
-
-        uiController.SetMissileText(missileCnt);
-        uiController.SetGunText(bulletCnt);
+        //uiController.SetMissileText(missileCnt);
+        //uiController.SetGunText(bulletCnt);
 
         SetArmament();
         SetUIAndTarget();
     }
     void Update()
     {
-        MissileCooldown(ref rightMslCooldown);
-        MissileCooldown(ref leftMslCooldown);
+        //MissileCooldown(ref rightMslCooldown);
+        //MissileCooldown(ref leftMslCooldown);
 
         foreach (WeaponSlot slot in mslSlots)
         {
@@ -370,8 +384,13 @@ public class WeaponController : MonoBehaviour
             slot.UpdateCooldown();
         }
 
-        uiController.SetMissileText(missileCnt);
-        uiController.SetGunText(bulletCnt);
-        uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
+        if (target != null)
+        {
+            SetMinimapCamera();
+        }
+
+        //uiController.SetMissileText(missileCnt);
+        //uiController.SetGunText(bulletCnt);
+        //uiController.SetSpecialWeaponText(specialWeaponName, specialWeaponCnt);
     }
 }

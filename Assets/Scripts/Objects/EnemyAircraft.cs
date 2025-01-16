@@ -20,6 +20,10 @@ public class EnemyAircraft : AircraftAI
 
     protected override Vector3 CreateWaypoint()
     {
+        if (GameManager.PlayerAircraft == null)
+        {
+            return Vector3.zero;
+        }
         float rate = Random.Range(0.0f, 1.0f);
         float distance = Vector3.Distance(transform.position, GameManager.PlayerAircraft.transform.position);
 

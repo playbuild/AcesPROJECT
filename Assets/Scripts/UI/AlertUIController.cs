@@ -163,6 +163,19 @@ public class AlertUIController : MonoBehaviour
             labelTimer = labelInfo.VisibleTime;
         }
     }
+    public IEnumerator ShowDamagedUI()
+    {
+        damaged.SetActive(true);
+        GameManager.UIController.SetWarningUIColor(true);
+
+        yield return new WaitForSeconds(0.2f);
+
+        GameManager.UIController.SetWarningUIColor(false);
+
+        yield return new WaitForSeconds(0.8f);
+
+        damaged.SetActive(false);
+    }
 
     void ShowAutopilotUI()
     {
@@ -273,6 +286,14 @@ public class AlertUIController : MonoBehaviour
     {
         isPlayingVoiceAlert = true;
         voiceAudioSource.PlayOneShot(missileVoiceAlertClip);
+    }
+    public void OnGameOver()
+    {
+        CancelInvoke();
+        HideAllAttackAlertUI();
+        alertParent.SetActive(false);
+
+        GameManager.UIController.SetWarningUIColor(false);
     }
 
     void Start()

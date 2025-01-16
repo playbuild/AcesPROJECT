@@ -45,6 +45,7 @@ public class MissionManager : MonoBehaviour
         }
     }
     public virtual void SetupForRestartFromCheckpoint() { }
+
     protected void SetResultData()
     {
         ResultData.missionName = missionInfo.MissionName;

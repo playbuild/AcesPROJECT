@@ -23,6 +23,10 @@ public class UIController : MonoBehaviour
     [SerializeField]
     AlertUIController alertUIController;
 
+    [Header("Upper Right UI")]
+    [SerializeField]
+    GameObject checkpointReachedUI;
+
     // Upper Left
     [Header("Upper Left UI")]
     [SerializeField]
@@ -78,6 +82,9 @@ public class UIController : MonoBehaviour
     [Header("Colors")]
     [SerializeField]
     Color cautionColor;
+
+    List<MaskColorChange> maskColorChanges = new List<MaskColorChange>();
+
     [SerializeField]
     Color normalColor;
     [SerializeField]
@@ -93,6 +100,7 @@ public class UIController : MonoBehaviour
 
     float remainTime;
     int score = 0;
+    float damage = 0;
     bool isTimeLow = false;
     bool isRedTimerActive = false;
     bool enableCount = true;
@@ -146,11 +154,8 @@ public class UIController : MonoBehaviour
         string text = string.Format("<align=left>{0}<line-height=0>\n<align=right><mspace=18>{1}</mspace><line-height=0>", specialWeaponName, specialWeapons);
         spwText.text = text;
     }
-    public void SetDamage(int damage)
+    void SetAircraftDamageUI()
     {
-        string text = string.Format("<align=left>DMG<line-height=0>\n<align=right>{0}%<line-height=0>", damage);
-        dmgText.text = text;
-
         if (damage < 34)
         {
             aircraftImage.color = GameManager.NormalColor;
@@ -162,6 +167,19 @@ public class UIController : MonoBehaviour
         else
         {
             aircraftImage.color = GameManager.WarningColor;
+        }
+    }
+    public void SetDamage(int damage)
+    {
+        string text = string.Format("<align=left>DMG<line-height=0>\n<align=right>{0}%<line-height=0>", damage);
+        dmgText.text = text;
+
+        this.damage = damage;
+        SetAircraftDamageUI();
+
+        if (damage > 0)
+        {
+            StartCoroutine(alertUIController.ShowDamagedUI());
         }
     }
     public void SwitchWeapon(WeaponSlot[] weaponSlots, bool useSpecialWeapon, Missile missile, bool playAudio = true)
@@ -189,6 +207,33 @@ public class UIController : MonoBehaviour
         RectTransform parentTransform = (isFirstView) ? firstCenterViewTransform : thirdCenterViewTransform;
         commonCenterUI.SetParent(parentTransform);
     }
+    public void AddMaskColorChange(MaskColorChange mask)
+    {
+        maskColorChanges.Add(mask);
+    }
+    public void SetWarningUIColor(bool isWarning)
+    {
+        Color color;
+        if (isWarning == true)
+        {
+            color = GameManager.WarningColor;
+            aircraftImage.color = GameManager.WarningColor;
+        }
+        else
+        {
+            color = GameManager.NormalColor;
+            SetAircraftDamageUI();
+        }
+
+        spriteMaterial.color = color;
+        fontMaterial.SetColor("_FaceColor", color);
+
+        foreach (MaskColorChange maskColorChange in maskColorChanges)
+        {
+            maskColorChange.ChangeComponentColor(color);
+        }
+    }
+
     public void SetThrottle(float throttle)
     {
         throttleGauge.fillAmount = (1 + throttle) * 0.5f;
@@ -196,12 +241,6 @@ public class UIController : MonoBehaviour
     public void SetHeading(float heading)
     {
         headingUIController.SetHeading(heading);
-    }
-    public void SetWarningUIColor(bool isWarning)
-    {
-        Color color = (isWarning == true) ? warningColor : normalColor;
-        spriteMaterial.color = color;
-        fontMaterial.SetColor("_FaceColor", color);
     }
     public void AdjustFirstViewUI(Vector3 cameraRotation)
     {
@@ -259,6 +298,18 @@ public class UIController : MonoBehaviour
     {
         alertUIController.SetLabel(labelEnum);
     }
+    public void ShowCheckpointReachedUI()
+    {
+        StartCoroutine(SetCheckpointReachedUI());
+    }
+
+    public IEnumerator SetCheckpointReachedUI()
+    {
+        checkpointReachedUI.SetActive(true);
+        yield return new WaitForSeconds(2.0f);
+        checkpointReachedUI.SetActive(false);
+    }
+
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();

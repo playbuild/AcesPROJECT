@@ -3388,6 +3388,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentTransform: {fileID: 1974573506}
+--- !u!1 &157285509
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 157285510}
+  m_Layer: 5
+  m_Name: Upper Right <<Checkpoint>>
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &157285510
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157285509}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.999972, y: 0.999972, z: 0.999972}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 906634844}
+  m_Father: {fileID: 1712306474}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 852.4001, y: 457.6}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 1, y: 1}
 --- !u!1 &162394705
 GameObject:
   m_ObjectHideFlags: 0
@@ -10056,6 +10092,7 @@ MonoBehaviour:
   speedText: {fileID: 619893296}
   altitudeText: {fileID: 1415601366}
   alertUIController: {fileID: 1121154463}
+  checkpointReachedUI: {fileID: 157285509}
   timeText: {fileID: 1955943076}
   scoreText: {fileID: 1674733061}
   targetText: {fileID: 659725993}
@@ -12883,6 +12920,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 919132147665213439}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1661717907}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   onPhase3CutsceneEnded:
     m_PersistentCalls:
       m_Calls:
@@ -12993,6 +13054,30 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 919132147665213439}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1661717907}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
         m_CallState: 2
   onEndingCutsceneEnded:
     m_PersistentCalls:
@@ -14836,7 +14921,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2438590675320473417, guid: 2b36287d2b0632c4fb11ca5d62cab583, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5813857348006514310, guid: 2b36287d2b0632c4fb11ca5d62cab583, type: 3}
       propertyPath: m_ReceiveShadows
@@ -17592,6 +17677,140 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentTransform: {fileID: 1974573506}
+--- !u!1 &906634843
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 906634844}
+  - component: {fileID: 906634846}
+  - component: {fileID: 906634845}
+  m_Layer: 5
+  m_Name: CHECKPOINT REACHED
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &906634844
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906634843}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 157285510}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -162, y: -80}
+  m_SizeDelta: {x: 400, y: 40}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &906634845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906634843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: CHECKPOINT REACHED
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: cf52efcb548cd1a40bcf3b0affc128f1, type: 2}
+  m_sharedMaterial: {fileID: 3188960752237575881, guid: cf52efcb548cd1a40bcf3b0affc128f1, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 30
+  m_fontSizeBase: 30
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 4
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_enableWordWrapping: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 1
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &906634846
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 906634843}
+  m_CullTransparentMesh: 1
 --- !u!1 &910809048
 GameObject:
   m_ObjectHideFlags: 0
@@ -20577,7 +20796,19 @@ MonoBehaviour:
     m_ActionId: e3f60f75-2a44-4cba-a5bd-4d0ccfcace33
     m_ActionName: FighterAction/Debug[/Keyboard/u]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 683706351}
+        m_TargetAssemblyTypeName: CutsceneController, Assembly-CSharp
+        m_MethodName: OnSkip
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: f3daca63-e0ec-4a0c-9546-a63402455a7a
     m_ActionName: Cutscene/Skip[/Keyboard/escape]
   m_NeverAutoSwitchControlSchemes: 0
@@ -28685,7 +28916,7 @@ MonoBehaviour:
   destroyed: {fileID: 11400000, guid: 3ef739b0d306aef4fa832ffb59e21b58, type: 2}
   hit: {fileID: 11400000, guid: 8d46298257ee14b45b107f0d2011bcb4, type: 2}
   missed: {fileID: 11400000, guid: bc7da0f10139b474e839b4ded4acb55f, type: 2}
-  missionAccomplished: {fileID: 0}
+  missionAccomplished: {fileID: 11400000, guid: 94b42f906ee27ff4597f942e2cad60c6, type: 2}
   missionFailed: {fileID: 11400000, guid: a393485ba2e56e742a7ed5f9f72598ab, type: 2}
   voiceAlertRepeatTime: 1.5
   missileCautionAlertRepeatTime: 1
@@ -30037,6 +30268,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1209860189}
+        m_TargetAssemblyTypeName: MissionZERO, Assembly-CSharp
+        m_MethodName: AddPhase2Scripts
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPhase2StartScripts:
   - P2_1
   - P2_2
@@ -30085,7 +30328,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 1209860189}
         m_TargetAssemblyTypeName: MissionZERO, Assembly-CSharp
@@ -30135,6 +30378,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 590899194}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ShowCheckpointReachedUI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 308476171}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -30153,7 +30408,8 @@ MonoBehaviour:
   - P3_3
   onPhase3EndScripts:
   - P3_6
-  onPhase3FailScripts: []
+  onPhase3FailScripts:
+  - A3_X
   pixy: {fileID: 1661717905}
   cutsceneController: {fileID: 683706351}
   phase3PixyTransform: {fileID: 122845421}
@@ -39311,9 +39567,9 @@ MonoBehaviour:
   objectInfo: {fileID: 11400000, guid: 801b123a26c39dd44865caba2cbf2e62, type: 2}
   destroyEffect: {fileID: 1556574608389113247, guid: 8d4b3caee090b1247bf61af54d4d0905, type: 3}
   isNextTarget: 0
-  maxSpeed: 5
-  minSpeed: 1
-  defaultSpeed: 2
+  maxSpeed: 220
+  minSpeed: 100
+  defaultSpeed: 150
   accelerateLerpAmount: 1
   accelerateAmount: 20
   turningForce: 1
@@ -39322,7 +39578,7 @@ MonoBehaviour:
   zRotateLerpAmount: 1.5
   initialWaypoints: []
   waypointMinHeight: 500
-  waypointMaxHeight: 900
+  waypointMaxHeight: 1500
   areaCollider: {fileID: 1563943390}
   evasionRate: 0.35
   newWaypointDistance: 500
@@ -39387,6 +39643,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1209860189}
+        m_TargetAssemblyTypeName: UnityEngine.MonoBehaviour, UnityEngine
+        m_MethodName: CancelInvoke
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1209860189}
+        m_TargetAssemblyTypeName: MissionZERO, Assembly-CSharp
+        m_MethodName: CheckElapsedTimeBeforePhase3
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   phase3EndEvents:
     m_PersistentCalls:
       m_Calls:
@@ -39418,6 +39698,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1209860189}
+        m_TargetAssemblyTypeName: MissionZERO, Assembly-CSharp
+        m_MethodName: CheckElapsedTimeAfterPhase3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -39460,9 +39752,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1661717898}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 813c6c00d863ef3468cb98f0e6db778c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -40622,6 +40914,7 @@ RectTransform:
   - {fileID: 2139580521}
   - {fileID: 1320325748}
   - {fileID: 632184509}
+  - {fileID: 157285510}
   m_Father: {fileID: 1907030870}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -43217,13 +43510,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1828656297}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -989, y: 250, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2127937331}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1831190560
 GameObject:
   m_ObjectHideFlags: 0
@@ -45551,13 +45844,40 @@ MonoBehaviour:
   - {fileID: 1907030869}
   executeOnGameOver:
     m_PersistentCalls:
-      m_Calls: []
-  disableOnGameOver: []
+      m_Calls:
+      - m_Target: {fileID: 1121154463}
+        m_TargetAssemblyTypeName: AlertUIController, Assembly-CSharp
+        m_MethodName: OnGameOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 919132147665213437}
+        m_TargetAssemblyTypeName: PlayerAircraft, Assembly-CSharp
+        m_MethodName: DisableAllMissiles
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  disableOnGameOver:
+  - {fileID: 1121154461}
+  - {fileID: 632184508}
   disableOnGameOverObjects:
   - {fileID: 1120938099}
   - {fileID: 642678545}
   - {fileID: 1712306469}
   - {fileID: 748390212}
+  - {fileID: 236155035}
   enableOnGameOverObjects:
   - {fileID: 1654781050}
   - {fileID: 1075911878}
@@ -50073,8 +50393,8 @@ MonoBehaviour:
   loopBGM: {fileID: 0}
   bgmPlayDelay: 1
   audioMixer: {fileID: 24100000, guid: ecd060635cdf5484faf4bb88fa81740f, type: 2}
-  bgmIntroAudioSource: {fileID: 0}
-  bgmLoopAudioSource: {fileID: 0}
+  bgmIntroAudioSource: {fileID: 703143445}
+  bgmLoopAudioSource: {fileID: 1855171448}
   cutsceneBGMVolume: -7
   volumeLerpAmount: 0.5
 --- !u!4 &2112316501
@@ -51506,6 +51826,7 @@ MonoBehaviour:
   gunRPM: 1200
   missile: {fileID: 2797035360069065348, guid: ac340c911b1a1c8439acd116fe36d84b, type: 3}
   specialWeapon: {fileID: 8671801656823410973, guid: bde73a6bb4ae07249b5a2a75aecc96ed, type: 3}
+  minimapCamera: {fileID: 819327131}
   gunCrosshair: {fileID: 180058532}
   ammunationZeroClip: {fileID: 8300000, guid: b38fb4bfdd4c1f24abda2ce60cbae9b9, type: 3}
   cooldownClip: {fileID: 8300000, guid: 584c43ce4d1ec164e9ec167ae2676518, type: 3}
@@ -51591,9 +51912,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147665213433}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2392cd8a966dcba4494fe42b1a9bd359, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
